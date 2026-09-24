@@ -3,7 +3,13 @@ package com.careertrack.controller;
 import com.careertrack.dto.ApplicationResponse;
 import com.careertrack.entity.ApplicationEntity;
 import com.careertrack.service.ApplicationService;
+
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.URL;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +36,7 @@ public class ApplicationController {
             @RequestParam(required = false) String status,
             HttpServletRequest request
     ) {
+
         Long userId = getUserId(request);
 
         List<ApplicationEntity> applications =
@@ -52,6 +59,7 @@ public class ApplicationController {
             @PathVariable Long id,
             HttpServletRequest request
     ) {
+
         Long userId = getUserId(request);
 
         ApplicationEntity application =
@@ -67,9 +75,10 @@ public class ApplicationController {
 
     @PostMapping
     public ResponseEntity<?> createApplication(
-            @RequestBody ApplicationRequest request,
+            @Valid @RequestBody ApplicationRequest request,
             HttpServletRequest httpRequest
     ) {
+
         Long userId = getUserId(httpRequest);
 
         ApplicationEntity application =
@@ -94,9 +103,10 @@ public class ApplicationController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateApplication(
             @PathVariable Long id,
-            @RequestBody ApplicationRequest request,
+            @Valid @RequestBody ApplicationRequest request,
             HttpServletRequest httpRequest
     ) {
+
         Long userId = getUserId(httpRequest);
 
         ApplicationEntity application =
@@ -122,6 +132,7 @@ public class ApplicationController {
             @PathVariable Long id,
             HttpServletRequest request
     ) {
+
         Long userId = getUserId(request);
 
         applicationService.deleteApplication(
@@ -137,7 +148,9 @@ public class ApplicationController {
         );
     }
 
-    private Long getUserId(HttpServletRequest request) {
+    private Long getUserId(
+            HttpServletRequest request
+    ) {
 
         Object userIdAttribute =
                 request.getAttribute("userId");
@@ -152,13 +165,49 @@ public class ApplicationController {
     }
 
     public record ApplicationRequest(
+
+            @NotBlank(
+                    message = "Company name is required"
+            )
+            @Size(
+                    max = 150,
+                    message = "Company name must not exceed 150 characters"
+            )
             String companyName,
+
+            @NotBlank(
+                    message = "Position is required"
+            )
+            @Size(
+                    max = 150,
+                    message = "Position must not exceed 150 characters"
+            )
             String position,
+
+            @NotBlank(
+                    message = "Status is required"
+            )
             String status,
+
             LocalDate applicationDate,
+
+            @URL(
+                    message = "Job URL must be a valid URL"
+            )
+            @Size(
+                    max = 500,
+                    message = "Job URL must not exceed 500 characters"
+            )
             String jobUrl,
+
+            @Size(
+                    max = 150,
+                    message = "Location must not exceed 150 characters"
+            )
             String location,
+
             String notes
+
     ) {
     }
 }

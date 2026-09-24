@@ -18,17 +18,17 @@ public interface ApplicationRepository
             Long userId
     );
 
-    List<ApplicationEntity> findByUserIdAndStatus(
+    List<ApplicationEntity> findByUserIdAndStatusOrderByCreatedAtDesc(
             Long userId,
             String status
     );
 
-    List<ApplicationEntity> findByUserIdAndCompanyNameContainingIgnoreCase(
+    List<ApplicationEntity> findByUserIdAndCompanyNameContainingIgnoreCaseOrderByCreatedAtDesc(
             Long userId,
             String companyName
     );
 
-    List<ApplicationEntity> findByUserIdAndPositionContainingIgnoreCase(
+    List<ApplicationEntity> findByUserIdAndPositionContainingIgnoreCaseOrderByCreatedAtDesc(
             Long userId,
             String position
     );

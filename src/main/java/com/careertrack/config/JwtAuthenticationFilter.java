@@ -3,10 +3,12 @@ package com.careertrack.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +55,7 @@ public class JwtAuthenticationFilter
                 authorizationHeader.substring(7);
 
         try {
+
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
@@ -106,6 +109,9 @@ public class JwtAuthenticationFilter
             return;
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(
+                request,
+                response
+        );
     }
 }

@@ -4,6 +4,7 @@ import com.careertrack.entity.ApplicationEntity;
 import com.careertrack.entity.User;
 import com.careertrack.repository.ApplicationRepository;
 import com.careertrack.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,14 +53,14 @@ public class ApplicationService {
 
             List<ApplicationEntity> byCompany =
                     applicationRepository
-                            .findByUserIdAndCompanyNameContainingIgnoreCase(
+                            .findByUserIdAndCompanyNameContainingIgnoreCaseOrderByCreatedAtDesc(
                                     userId,
                                     keyword
                             );
 
             List<ApplicationEntity> byPosition =
                     applicationRepository
-                            .findByUserIdAndPositionContainingIgnoreCase(
+                            .findByUserIdAndPositionContainingIgnoreCaseOrderByCreatedAtDesc(
                                     userId,
                                     keyword
                             );
@@ -67,16 +68,23 @@ public class ApplicationService {
             applications = new ArrayList<>(byCompany);
 
             for (ApplicationEntity application : byPosition) {
+
                 if (!applications.contains(application)) {
                     applications.add(application);
                 }
             }
 
+            applications.sort(
+                    (first, second) ->
+                            second.getCreatedAt()
+                                    .compareTo(first.getCreatedAt())
+            );
+
         } else if (status != null && !status.isBlank()) {
 
             applications =
                     applicationRepository
-                            .findByUserIdAndStatus(
+                            .findByUserIdAndStatusOrderByCreatedAtDesc(
                                     userId,
                                     status
                             );
@@ -84,8 +92,10 @@ public class ApplicationService {
         } else {
 
             applications =
-                applicationRepository
-                    .findByUserIdOrderByCreatedAtDesc(userId);
+                    applicationRepository
+                            .findByUserIdOrderByCreatedAtDesc(
+                                    userId
+                            );
         }
 
         if (status != null && !status.isBlank()
@@ -106,8 +116,12 @@ public class ApplicationService {
             Long applicationId,
             Long userId
     ) {
+
         return applicationRepository
-                .findByIdAndUserId(applicationId, userId)
+                .findByIdAndUserId(
+                        applicationId,
+                        userId
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Application tidak ditemukan"
@@ -125,33 +139,53 @@ public class ApplicationService {
             String location,
             String notes
     ) {
+
         validateStatus(status);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User tidak ditemukan"
-                        )
-                );
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "User tidak ditemukan"
+                                )
+                        );
 
         ApplicationEntity application =
                 new ApplicationEntity();
 
         application.setUser(user);
-        application.setCompanyName(companyName);
-        application.setPosition(position);
-        application.setStatus(status);
-        application.setApplicationDate(applicationDate);
-        application.setJobUrl(jobUrl);
-        application.setLocation(location);
-        application.setNotes(notes);
+        application.setCompanyName(
+                companyName.trim()
+        );
+        application.setPosition(
+                position.trim()
+        );
+        application.setStatus(
+                status.trim()
+        );
+        application.setApplicationDate(
+                applicationDate
+        );
+        application.setJobUrl(
+                jobUrl
+        );
+        application.setLocation(
+                location
+        );
+        application.setNotes(
+                notes
+        );
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now =
+                LocalDateTime.now();
 
         application.setCreatedAt(now);
         application.setUpdatedAt(now);
 
-        return applicationRepository.save(application);
+        return applicationRepository.save(
+                application
+        );
     }
 
     public ApplicationEntity updateApplication(
@@ -165,6 +199,7 @@ public class ApplicationService {
             String location,
             String notes
     ) {
+
         validateStatus(status);
 
         ApplicationEntity application =
@@ -179,22 +214,41 @@ public class ApplicationService {
                                 )
                         );
 
-        application.setCompanyName(companyName);
-        application.setPosition(position);
-        application.setStatus(status);
-        application.setApplicationDate(applicationDate);
-        application.setJobUrl(jobUrl);
-        application.setLocation(location);
-        application.setNotes(notes);
-        application.setUpdatedAt(LocalDateTime.now());
+        application.setCompanyName(
+                companyName.trim()
+        );
+        application.setPosition(
+                position.trim()
+        );
+        application.setStatus(
+                status.trim()
+        );
+        application.setApplicationDate(
+                applicationDate
+        );
+        application.setJobUrl(
+                jobUrl
+        );
+        application.setLocation(
+                location
+        );
+        application.setNotes(
+                notes
+        );
+        application.setUpdatedAt(
+                LocalDateTime.now()
+        );
 
-        return applicationRepository.save(application);
+        return applicationRepository.save(
+                application
+        );
     }
 
     public void deleteApplication(
             Long applicationId,
             Long userId
     ) {
+
         ApplicationEntity application =
                 applicationRepository
                         .findByIdAndUserId(
@@ -207,17 +261,24 @@ public class ApplicationService {
                                 )
                         );
 
-        applicationRepository.delete(application);
+        applicationRepository.delete(
+                application
+        );
     }
 
-    private void validateStatus(String status) {
+    private void validateStatus(
+            String status
+    ) {
 
         if (status == null ||
-                !VALID_STATUSES.contains(status)) {
+                !VALID_STATUSES.contains(
+                        status.trim()
+                )) {
 
             throw new IllegalArgumentException(
                     "Status tidak valid. Gunakan: " +
-                    "WISHLIST, APPLIED, INTERVIEW, OFFER, atau REJECTED"
+                    "WISHLIST, APPLIED, INTERVIEW, " +
+                    "OFFER, atau REJECTED"
             );
         }
     }

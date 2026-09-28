@@ -1,187 +1,357 @@
 <template>
   <div class="auth-page">
 
-    <div class="auth-container">
+    <!-- ===============================
+         VISUAL PANEL
+         =============================== -->
 
-      <!-- Introduction -->
-      <section class="auth-intro">
+    <section class="auth-visual">
 
-        <div class="intro-content">
+      <div class="visual-content">
 
-          <div class="brand-mark">
-            CT
-          </div>
+        <router-link
+          to="/login"
+          class="brand"
+        >
+          <span class="brand-mark">
+            C
+          </span>
 
-          <p class="intro-eyebrow">
-            CAREER MANAGEMENT
-          </p>
+          <span class="brand-name">
+            Career<span>Track</span>
+          </span>
+        </router-link>
+
+        <div class="visual-copy">
+
+          <span class="visual-eyebrow">
+            BUILD YOUR NEXT MOVE
+          </span>
 
           <h1>
-            Build a clearer
-            <span>career path.</span>
+            Your next
+            <span>opportunity</span>
+            starts here.
           </h1>
 
-          <p class="intro-description">
-            Create your CareerTrack account and keep
-            every job application organized.
+          <p>
+            Create your CareerTrack account and
+            bring your job search, applications,
+            and career progress together.
           </p>
 
         </div>
 
-      </section>
+        <div class="visual-decoration">
 
-      <!-- Register Form -->
-      <section class="auth-form-section">
+          <div class="progress-card">
 
-        <div class="auth-card">
+            <div class="progress-top">
 
-          <div class="form-header">
+              <span>
+                Career progress
+              </span>
 
-            <p class="mobile-brand">
-              CareerTrack
-            </p>
+              <strong>
+                72%
+              </strong>
 
-            <h2>
-              Create your account
-            </h2>
+            </div>
 
-            <p>
-              Start tracking your job applications today.
-            </p>
+            <div class="progress-track">
+              <div class="progress-value"></div>
+            </div>
+
+            <div class="progress-labels">
+              <span>
+                Applications
+              </span>
+
+              <span>
+                Keep moving
+              </span>
+            </div>
 
           </div>
 
-          <form
-            @submit.prevent="handleRegister"
-            novalidate
+          <div class="floating-pill pill-one">
+            <span class="pill-dot"></span>
+            Stay organized
+          </div>
+
+          <div class="floating-pill pill-two">
+            <span class="pill-check">
+              ✓
+            </span>
+            Track every opportunity
+          </div>
+
+          <div class="orb orb-one"></div>
+          <div class="orb orb-two"></div>
+
+        </div>
+
+        <div class="visual-footer">
+          One place for every step of your career journey.
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===============================
+         REGISTER PANEL
+         =============================== -->
+
+    <main class="auth-content">
+
+      <div class="auth-card">
+
+        <div class="mobile-brand">
+
+          <router-link
+            to="/login"
+            class="brand"
           >
+            <span class="brand-mark">
+              C
+            </span>
 
-            <div class="form-group">
+            <span class="brand-name">
+              Career<span>Track</span>
+            </span>
+          </router-link>
 
-              <label for="name">
-                Full Name
-              </label>
+        </div>
+
+        <div class="auth-header">
+
+          <span class="auth-eyebrow">
+            GET STARTED
+          </span>
+
+          <h2>
+            Create your account
+          </h2>
+
+          <p>
+            Start organizing your career journey today.
+          </p>
+
+        </div>
+
+        <!-- ===========================
+             ALERTS
+             =========================== -->
+
+        <div
+          v-if="errorMessage"
+          class="form-alert error-alert"
+        >
+          <span class="alert-icon">
+            !
+          </span>
+
+          <span>
+            {{ errorMessage }}
+          </span>
+        </div>
+
+        <div
+          v-if="successMessage"
+          class="form-alert success-alert"
+        >
+          <span class="alert-icon success-icon">
+            ✓
+          </span>
+
+          <span>
+            {{ successMessage }}
+          </span>
+        </div>
+
+        <!-- ===========================
+             FORM
+             =========================== -->
+
+        <form
+          class="auth-form"
+          @submit.prevent="handleRegister"
+        >
+
+          <!-- FULL NAME -->
+
+          <div class="form-group">
+
+            <label for="name">
+              Full name
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+                •
+              </span>
 
               <input
                 id="name"
                 v-model="name"
                 type="text"
                 autocomplete="name"
-                placeholder="Enter your full name"
+                placeholder="Your full name"
+                maxlength="100"
                 :disabled="loading"
-                required
               />
 
             </div>
 
-            <div class="form-group">
+          </div>
 
-              <label for="email">
-                Email
-              </label>
+          <!-- EMAIL -->
+
+          <div class="form-group">
+
+            <label for="email">
+              Email
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+                @
+              </span>
 
               <input
                 id="email"
                 v-model="email"
                 type="email"
                 autocomplete="email"
-                placeholder="Enter your email"
+                placeholder="you@example.com"
+                maxlength="150"
                 :disabled="loading"
-                required
               />
 
             </div>
 
-            <div class="form-group">
+          </div>
 
-              <label for="password">
-                Password
-              </label>
+          <!-- PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+                •
+              </span>
 
               <input
                 id="password"
                 v-model="password"
                 type="password"
                 autocomplete="new-password"
-                placeholder="Create a password"
+                placeholder="At least 6 characters"
                 :disabled="loading"
-                required
               />
 
             </div>
 
-            <div class="form-group">
+          </div>
 
-              <label for="confirmPassword">
-                Confirm Password
-              </label>
+          <!-- CONFIRM PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="confirmPassword">
+              Confirm password
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+                •
+              </span>
 
               <input
                 id="confirmPassword"
                 v-model="confirmPassword"
                 type="password"
                 autocomplete="new-password"
-                placeholder="Confirm your password"
+                placeholder="Repeat your password"
                 :disabled="loading"
-                required
               />
 
             </div>
 
-            <div
-              v-if="errorMessage"
-              class="error-message"
-            >
-              {{ errorMessage }}
-            </div>
+          </div>
 
-            <div
-              v-if="successMessage"
-              class="success-message"
-            >
-              {{ successMessage }}
-            </div>
+          <!-- PASSWORD NOTE -->
 
-            <button
-              type="submit"
-              class="submit-button"
-              :disabled="loading"
-            >
+          <div class="password-note">
 
-              <span
-                v-if="loading"
-                class="spinner"
-              ></span>
+            <span class="note-dot"></span>
 
-              <span>
-                {{
-                  loading
-                    ? 'Creating account...'
-                    : 'Create Account'
-                }}
-              </span>
-
-            </button>
-
-          </form>
-
-          <div class="login-prompt">
-
-            <span>
-              Already have an account?
-            </span>
-
-            <router-link to="/login">
-              Sign in
-            </router-link>
+            Use at least 6 characters for your password.
 
           </div>
 
+          <!-- SUBMIT -->
+
+          <button
+            type="submit"
+            class="submit-button"
+            :disabled="loading"
+          >
+
+            <span
+              v-if="loading"
+              class="button-spinner"
+            ></span>
+
+            <span>
+              {{
+                loading
+                  ? 'Creating account...'
+                  : 'Create account'
+              }}
+            </span>
+
+            <span
+              v-if="!loading"
+              class="button-arrow"
+            >
+              →
+            </span>
+
+          </button>
+
+        </form>
+
+        <!-- ===========================
+             LOGIN
+             =========================== -->
+
+        <div class="auth-footer">
+
+          <span>
+            Already have an account?
+          </span>
+
+          <router-link
+            to="/login"
+          >
+            Sign in
+          </router-link>
+
         </div>
 
-      </section>
+      </div>
 
-    </div>
+    </main>
 
   </div>
 </template>
@@ -189,6 +359,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import api from '../services/api'
 
 const router = useRouter()
@@ -208,29 +379,45 @@ const handleRegister = async () => {
   successMessage.value = ''
 
   if (!name.value.trim()) {
-    errorMessage.value = 'Full name is required.'
+
+    errorMessage.value =
+      'Full name is required.'
+
     return
   }
 
   if (!email.value.trim()) {
-    errorMessage.value = 'Email is required.'
+
+    errorMessage.value =
+      'Email is required.'
+
     return
   }
 
   if (!password.value) {
-    errorMessage.value = 'Password is required.'
+
+    errorMessage.value =
+      'Password is required.'
+
     return
   }
 
   if (password.value.length < 6) {
+
     errorMessage.value =
       'Password must be at least 6 characters.'
+
     return
   }
 
-  if (password.value !== confirmPassword.value) {
+  if (
+    password.value !==
+    confirmPassword.value
+  ) {
+
     errorMessage.value =
       'Password and confirm password do not match.'
+
     return
   }
 
@@ -238,45 +425,53 @@ const handleRegister = async () => {
 
   try {
 
-    const response = await api.post(
-      '/auth/register',
-      {
-        name: name.value.trim(),
-        email: email.value.trim(),
-        password: password.value
-      }
-    )
+    const response =
+      await api.post(
+        '/auth/register',
+        {
+          name:
+            name.value.trim(),
+
+          email:
+            email.value.trim(),
+
+          password:
+            password.value
+        }
+      )
 
     successMessage.value =
       response.data.message ||
       'Registration successful.'
 
     setTimeout(() => {
+
       router.push('/login')
-    }, 1000)
+
+    }, 1200)
 
   } catch (error) {
 
     console.error(error)
 
-    if (error.response?.status === 409) {
+    if (
+      error.response?.status === 409
+    ) {
 
       errorMessage.value =
         error.response.data?.message ||
-        'Email sudah terdaftar.'
+        'Email is already registered.'
 
     } else {
 
       errorMessage.value =
         error.response?.data?.message ||
         'Unable to create account. Please try again.'
-
     }
 
   } finally {
 
     loading.value = false
-
   }
 }
 </script>
@@ -285,260 +480,645 @@ const handleRegister = async () => {
 .auth-page {
   min-height: 100vh;
 
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
 
-  background: #f7f8fc;
+  background: var(--background);
 }
 
-.auth-container {
-  width: 100%;
+/* ===============================
+   VISUAL PANEL
+   =============================== */
+
+.auth-visual {
+  position: relative;
+
   min-height: 100vh;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(124, 92, 252, 0.35),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 15% 85%,
+      rgba(49, 85, 217, 0.3),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      #18275f,
+      #3155d9 62%,
+      #6952dc
+    );
+
+  color: #ffffff;
 }
 
-/* =========================
-   INTRO
-========================= */
+.visual-content {
+  position: relative;
 
-.auth-intro {
+  width: 100%;
+  max-width: 650px;
+  min-height: 100vh;
+
+  margin: 0 auto;
+
+  padding: 42px 56px;
+
   display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: inline-flex;
   align-items: center;
 
-  padding: 64px;
+  gap: 10px;
 
-  background: #1a2e6f;
-}
+  width: fit-content;
 
-.intro-content {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
+  color: #ffffff;
+
+  text-decoration: none;
 }
 
 .brand-mark {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 34px;
-
-  border-radius: 12px;
+  border-radius: 10px;
 
   background: rgba(255, 255, 255, 0.14);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
   color: #ffffff;
 
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.1);
 }
 
-.intro-eyebrow {
-  margin: 0 0 14px;
+.brand-name {
+  font-size: 18px;
+  font-weight: 800;
 
-  color: rgba(255, 255, 255, 0.7);
-
-  font-size: 12px;
-  font-weight: 700;
-
-  letter-spacing: 0.12em;
+  letter-spacing: -0.03em;
 }
 
-.auth-intro h1 {
-  max-width: 480px;
+.brand-name span {
+  color: #c9c1ff;
+}
 
+/* ===============================
+   VISUAL COPY
+   =============================== */
+
+.visual-copy {
+  position: relative;
+  z-index: 2;
+
+  max-width: 510px;
+
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.visual-eyebrow {
+  display: block;
+
+  margin-bottom: 15px;
+
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+}
+
+.visual-copy h1 {
   margin: 0;
 
   color: #ffffff;
 
-  font-size: clamp(36px, 4vw, 58px);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-size: clamp(42px, 4.5vw, 62px);
+  line-height: 1.03;
+
+  letter-spacing: -0.055em;
 }
 
-.auth-intro h1 span {
-  display: block;
-  color: #bfc9ef;
+.visual-copy h1 span {
+  color: #c9c1ff;
 }
 
-.intro-description {
-  max-width: 440px;
+.visual-copy p {
+  max-width: 470px;
 
-  margin: 24px 0 0;
+  margin: 22px 0 0;
 
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.68);
 
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.75;
 }
 
-/* =========================
-   FORM
-========================= */
+/* ===============================
+   DECORATION
+   =============================== */
 
-.auth-form-section {
+.visual-decoration {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.orb-one {
+  width: 320px;
+  height: 320px;
+
+  right: -120px;
+  top: 18%;
+}
+
+.orb-two {
+  width: 210px;
+  height: 210px;
+
+  left: -110px;
+  bottom: 13%;
+}
+
+.progress-card {
+  position: absolute;
+
+  z-index: 3;
+
+  right: 8%;
+  top: 25%;
+
+  width: 245px;
+
+  padding: 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 20px 45px rgba(10, 19, 56, 0.16);
+
+  transform: rotate(3deg);
+}
+
+.progress-top,
+.progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-top {
+  margin-bottom: 12px;
+}
+
+.progress-top span {
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 9px;
+}
+
+.progress-top strong {
+  color: #ffffff;
+
+  font-size: 11px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.progress-value {
+  width: 72%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffffff,
+      #c9c1ff
+    );
+}
+
+.progress-labels {
+  margin-top: 9px;
+}
+
+.progress-labels span {
+  color: rgba(255, 255, 255, 0.4);
+
+  font-size: 7px;
+}
+
+.floating-pill {
+  position: absolute;
+
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.09);
+
+  color: rgba(255, 255, 255, 0.78);
+
+  font-size: 8px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pill-one {
+  right: 17%;
+  bottom: 30%;
+
+  transform: rotate(-3deg);
+}
+
+.pill-two {
+  right: 5%;
+  bottom: 20%;
+
+  transform: rotate(2deg);
+}
+
+.pill-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #c9c1ff;
+
+  box-shadow:
+    0 0 0 3px rgba(201, 193, 255, 0.12);
+}
+
+.pill-check {
+  color: #c9c1ff;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.visual-footer {
+  position: relative;
+  z-index: 2;
+
+  color: rgba(255, 255, 255, 0.42);
+
+  font-size: 9px;
+}
+
+/* ===============================
+   AUTH CONTENT
+   =============================== */
+
+.auth-content {
+  min-height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 48px;
+  padding: 40px;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 430px;
-}
-
-.form-header {
-  margin-bottom: 30px;
+  max-width: 390px;
 }
 
 .mobile-brand {
   display: none;
 }
 
-.form-header h2 {
+/* ===============================
+   HEADER
+   =============================== */
+
+.auth-header {
+  margin-bottom: 25px;
+}
+
+.auth-eyebrow {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+}
+
+.auth-header h2 {
   margin: 0;
 
-  color: #111827;
+  color: var(--text-primary);
 
-  font-size: 30px;
-  line-height: 1.2;
+  font-size: 28px;
+  line-height: 1.15;
+
+  letter-spacing: -0.04em;
 }
 
-.form-header p:not(.mobile-brand) {
+.auth-header p {
   margin: 9px 0 0;
 
-  color: #6b7280;
+  color: var(--text-secondary);
 
-  font-size: 14px;
+  font-size: 12px;
 }
 
-form {
+/* ===============================
+   ALERTS
+   =============================== */
+
+.form-alert {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 15px;
+
+  padding: 10px 11px;
+
+  border-radius: 9px;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.error-alert {
+  border: 1px solid #f1cccc;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+}
+
+.success-alert {
+  border: 1px solid #c8eadf;
+
+  background: var(--success-soft);
+
+  color: var(--success);
+}
+
+.alert-icon {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--danger);
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.success-icon {
+  background: var(--success);
+}
+
+/* ===============================
+   FORM
+   =============================== */
+
+.auth-form {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+
+  gap: 13px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+
+  gap: 6px;
 }
 
 .form-group label {
-  color: #374151;
+  color: var(--text-primary);
 
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
 }
 
-.form-group input {
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+
+  top: 50%;
+  left: 12px;
+
+  transform: translateY(-50%);
+
+  color: var(--text-muted);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  pointer-events: none;
+}
+
+.input-wrapper input {
   width: 100%;
-  height: 46px;
+  height: 42px;
 
-  box-sizing: border-box;
+  padding: 0 13px 0 34px;
 
-  padding: 0 13px;
-
-  border: 1px solid #d9dce5;
-  border-radius: 8px;
-
-  background: #ffffff;
-  color: #111827;
-
-  font-size: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
 
   outline: none;
+
+  background: #ffffff;
+
+  color: var(--text-primary);
+
+  font-size: 11px;
 
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-.form-group input::placeholder {
-  color: #9ca3af;
+.input-wrapper input::placeholder {
+  color: var(--text-muted);
 }
 
-.form-group input:focus {
-  border-color: #1a2e6f;
+.input-wrapper input:focus {
+  border-color: var(--primary);
 
   box-shadow:
-    0 0 0 3px rgba(26, 46, 111, 0.08);
+    0 0 0 3px var(--primary-soft);
 }
 
-.form-group input:disabled {
-  background: #f9fafb;
+.input-wrapper input:disabled {
+  background: #f7f8fb;
+
   cursor: not-allowed;
 }
 
-.error-message,
-.success-message {
-  padding: 11px 13px;
+/* ===============================
+   PASSWORD NOTE
+   =============================== */
 
-  border-radius: 8px;
+.password-note {
+  display: flex;
+  align-items: center;
 
-  font-size: 13px;
-  line-height: 1.5;
+  gap: 6px;
+
+  margin-top: -2px;
+
+  color: var(--text-muted);
+
+  font-size: 8px;
 }
 
-.error-message {
-  border: 1px solid #fecaca;
-  background: #fff7f7;
-  color: #b91c1c;
+.note-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: var(--accent);
 }
 
-.success-message {
-  border: 1px solid #bbf7d0;
-  background: #f0fdf4;
-  color: #15803d;
-}
+/* ===============================
+   SUBMIT
+   =============================== */
 
 .submit-button {
   width: 100%;
-  height: 46px;
+  height: 44px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 9px;
+  gap: 8px;
 
-  margin-top: 3px;
+  margin-top: 4px;
 
-  border: none;
-  border-radius: 8px;
+  border: 0;
+  border-radius: 9px;
 
-  background: #1a2e6f;
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--accent)
+    );
+
   color: #ffffff;
 
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 750;
 
   cursor: pointer;
 
+  box-shadow:
+    0 8px 20px rgba(49, 85, 217, 0.16);
+
   transition:
-    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
     opacity 0.2s ease;
 }
 
-.submit-button:hover {
-  background: #14245a;
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 11px 24px rgba(49, 85, 217, 0.22);
 }
 
 .submit-button:disabled {
   opacity: 0.65;
+
   cursor: not-allowed;
 }
 
-.spinner {
-  width: 15px;
-  height: 15px;
+.button-arrow {
+  font-size: 14px;
+}
 
-  border: 2px solid rgba(255, 255, 255, 0.35);
+.button-spinner {
+  width: 13px;
+  height: 13px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+
   border-top-color: #ffffff;
 
   border-radius: 50%;
@@ -546,120 +1126,149 @@ form {
   animation: spin 0.7s linear infinite;
 }
 
+/* ===============================
+   FOOTER
+   =============================== */
+
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  margin-top: 22px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+}
+
+.auth-footer a {
+  color: var(--primary);
+
+  font-weight: 750;
+
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   ANIMATION
+   =============================== */
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.login-prompt {
-  display: flex;
-  justify-content: center;
-
-  gap: 5px;
-
-  margin-top: 26px;
-
-  color: #6b7280;
-
-  font-size: 13px;
-}
-
-.login-prompt a {
-  color: #1a2e6f;
-
-  font-weight: 600;
-
-  text-decoration: none;
-}
-
-.login-prompt a:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   TABLET
-========================= */
+/* ===============================
+   RESPONSIVE
+   =============================== */
 
 @media (max-width: 900px) {
-
-  .auth-container {
-    grid-template-columns: 0.85fr 1.15fr;
+  .auth-page {
+    grid-template-columns: 1fr;
   }
 
-  .auth-intro {
-    padding: 42px;
-  }
-
-  .auth-form-section {
-    padding: 36px;
-  }
-
-  .auth-intro h1 {
-    font-size: 42px;
-  }
-
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 700px) {
-
-  .auth-container {
-    display: block;
-  }
-
-  .auth-intro {
+  .auth-visual {
     display: none;
   }
 
-  .auth-form-section {
+  .auth-content {
     min-height: 100vh;
 
-    padding: 32px 20px;
+    padding: 35px 24px;
   }
 
   .auth-card {
-    max-width: 460px;
+    max-width: 410px;
   }
 
   .mobile-brand {
-    display: block;
+    display: flex;
 
-    margin: 0 0 24px;
+    justify-content: center;
 
-    color: #1a2e6f;
-
-    font-size: 20px;
-    font-weight: 700;
+    margin-bottom: 45px;
   }
 
-  .form-header h2 {
-    font-size: 27px;
+  .mobile-brand .brand {
+    color: var(--text-primary);
   }
 
+  .mobile-brand .brand-mark {
+    background:
+      linear-gradient(
+        135deg,
+        var(--primary),
+        var(--accent)
+      );
+
+    border: 0;
+  }
+
+  .mobile-brand .brand-name {
+    color: var(--text-primary);
+  }
+
+  .mobile-brand .brand-name span {
+    color: var(--primary);
+  }
 }
 
-/* =========================
-   SMALL MOBILE
-========================= */
+@media (max-width: 600px) {
+  .auth-content {
+    align-items: flex-start;
 
-@media (max-width: 400px) {
-
-  .auth-form-section {
-    padding: 28px 16px;
+    padding: 28px 18px;
   }
 
-  .form-header h2 {
+  .mobile-brand {
+    margin-bottom: 38px;
+  }
+
+  .auth-header h2 {
     font-size: 25px;
   }
 
-  .login-prompt {
-    flex-direction: column;
-    align-items: center;
+  .auth-header p {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-content {
+    padding: 24px 14px;
   }
 
+  .mobile-brand {
+    margin-bottom: 32px;
+  }
+
+  .auth-header {
+    margin-bottom: 21px;
+  }
+
+  .auth-header h2 {
+    font-size: 23px;
+  }
+
+  .input-wrapper input,
+  .submit-button {
+    height: 41px;
+  }
+
+  .auth-footer {
+    flex-direction: column;
+
+    gap: 3px;
+
+    margin-top: 20px;
+  }
 }
 </style>

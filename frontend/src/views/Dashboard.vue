@@ -5,208 +5,514 @@
 
     <main class="dashboard-container">
 
-      <!-- Welcome -->
-      <section class="welcome-section">
-        <div>
-          <p class="eyebrow">
+      <!-- =================================
+           HERO
+           ================================= -->
+
+      <section class="hero-section">
+
+        <div class="hero-copy">
+
+          <span class="eyebrow">
             CAREER OVERVIEW
-          </p>
+          </span>
 
           <h1>
-            Welcome back, {{ name }} 👋
+            Welcome back,
+            <span>{{ name }}</span>
           </h1>
 
-          <p class="welcome-description">
-            Keep track of your job search journey in one place.
+          <p>
+            Keep your job search organized,
+            focused, and moving forward.
           </p>
+
         </div>
 
         <button
-          class="add-button"
+          type="button"
+          class="primary-button"
           @click="goToApplications"
         >
-          + Add Application
+          <span class="button-plus">
+            +
+          </span>
+
+          Add application
         </button>
+
       </section>
 
-      <!-- Statistics -->
+
+      <!-- =================================
+           ERROR
+           ================================= -->
+
+      <div
+        v-if="errorMessage"
+        class="error-banner"
+      >
+        <span class="error-icon">
+          !
+        </span>
+
+        <span>
+          {{ errorMessage }}
+        </span>
+      </div>
+
+
+      <!-- =================================
+           MAIN STATS
+           ================================= -->
+
       <section class="stats-grid">
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Total Applications
-            </div>
+        <!-- TOTAL -->
 
-            <div class="stat-value">
+        <article class="stat-card stat-card-main">
+
+          <div class="stat-header">
+
+            <span class="stat-label">
+              Total applications
+            </span>
+
+            <span class="stat-icon">
+              ↗
+            </span>
+
+          </div>
+
+          <div class="stat-number">
             {{ applications.length }}
-            </div>
-        </div>
+          </div>
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Wishlist
-            </div>
+          <p class="stat-description">
+            Everything you're tracking
+          </p>
 
-            <div class="stat-value">
-            {{ getStatusCount('WISHLIST') }}
-            </div>
-        </div>
+          <div class="stat-accent"></div>
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Applied
-            </div>
+        </article>
 
-            <div class="stat-value">
-            {{ getStatusCount('APPLIED') }}
-            </div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Interview
-            </div>
+        <!-- ACTIVE -->
 
-            <div class="stat-value">
+        <article class="stat-card">
+
+          <div class="stat-header">
+
+            <span class="stat-label">
+              Active
+            </span>
+
+            <span class="stat-icon">
+              ◌
+            </span>
+
+          </div>
+
+          <div class="stat-number">
+            {{ activeCount }}
+          </div>
+
+          <p class="stat-description">
+            Applications still in progress
+          </p>
+
+        </article>
+
+
+        <!-- INTERVIEW -->
+
+        <article class="stat-card">
+
+          <div class="stat-header">
+
+            <span class="stat-label">
+              Interviews
+            </span>
+
+            <span class="stat-icon">
+              ✦
+            </span>
+
+          </div>
+
+          <div class="stat-number">
             {{ getStatusCount('INTERVIEW') }}
+          </div>
+
+          <p class="stat-description">
+            Conversations in progress
+          </p>
+
+        </article>
+
+      </section>
+
+
+      <!-- =================================
+           OVERVIEW + PROGRESS
+           ================================= -->
+
+      <section class="overview-grid">
+
+        <!-- APPLICATION OVERVIEW -->
+
+        <article class="overview-card">
+
+          <div class="section-heading">
+
+            <div>
+              <span class="section-eyebrow">
+                APPLICATION OVERVIEW
+              </span>
+
+              <h2>
+                Your pipeline
+              </h2>
             </div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Offer
+            <button
+              type="button"
+              class="text-button"
+              @click="goToApplications"
+            >
+              View all
+              <span>→</span>
+            </button>
+
+          </div>
+
+
+          <div class="pipeline-list">
+
+            <!-- WISHLIST -->
+
+            <div class="pipeline-row">
+
+              <div class="pipeline-info">
+
+                <span class="pipeline-dot wishlist"></span>
+
+                <span>
+                  Wishlist
+                </span>
+
+              </div>
+
+              <strong>
+                {{ getStatusCount('WISHLIST') }}
+              </strong>
+
             </div>
 
-            <div class="stat-value">
-            {{ getStatusCount('OFFER') }}
+
+            <!-- APPLIED -->
+
+            <div class="pipeline-row">
+
+              <div class="pipeline-info">
+
+                <span class="pipeline-dot applied"></span>
+
+                <span>
+                  Applied
+                </span>
+
+              </div>
+
+              <strong>
+                {{ getStatusCount('APPLIED') }}
+              </strong>
+
             </div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-label">
-            Rejected
+
+            <!-- INTERVIEW -->
+
+            <div class="pipeline-row">
+
+              <div class="pipeline-info">
+
+                <span class="pipeline-dot interview"></span>
+
+                <span>
+                  Interview
+                </span>
+
+              </div>
+
+              <strong>
+                {{ getStatusCount('INTERVIEW') }}
+              </strong>
+
             </div>
 
-            <div class="stat-value">
-            {{ getStatusCount('REJECTED') }}
+
+            <!-- OFFER -->
+
+            <div class="pipeline-row">
+
+              <div class="pipeline-info">
+
+                <span class="pipeline-dot offer"></span>
+
+                <span>
+                  Offer
+                </span>
+
+              </div>
+
+              <strong>
+                {{ getStatusCount('OFFER') }}
+              </strong>
+
             </div>
-        </div>
 
-        </section>
 
-      <!-- Applications -->
-      <section class="applications-section">
+            <!-- REJECTED -->
 
-        <div class="section-header">
+            <div class="pipeline-row">
+
+              <div class="pipeline-info">
+
+                <span class="pipeline-dot rejected"></span>
+
+                <span>
+                  Rejected
+                </span>
+
+              </div>
+
+              <strong>
+                {{ getStatusCount('REJECTED') }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- CAREER PROGRESS -->
+
+        <article class="progress-card">
+
+          <div class="section-heading">
+
+            <div>
+              <span class="section-eyebrow">
+                CAREER PROGRESS
+              </span>
+
+              <h2>
+                Keep moving
+              </h2>
+            </div>
+
+            <span class="progress-percent">
+              {{ progressPercentage }}%
+            </span>
+
+          </div>
+
+
+          <div class="progress-circle-wrapper">
+
+            <div
+              class="progress-circle"
+              :style="{
+                '--progress':
+                  progressPercentage * 3.6 + 'deg'
+              }"
+            >
+
+              <div class="progress-circle-inner">
+
+                <strong>
+                  {{ progressPercentage }}%
+                </strong>
+
+                <span>
+                  progress
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <p class="progress-message">
+            {{
+              progressPercentage > 70
+                ? 'You are making strong progress. Keep the momentum going.'
+                : progressPercentage > 40
+                  ? 'You are building momentum. Keep tracking your opportunities.'
+                  : 'Start adding opportunities and keep your career journey moving.'
+            }}
+          </p>
+
+
+          <button
+            type="button"
+            class="secondary-button"
+            @click="goToApplications"
+          >
+            Manage applications
+            <span>→</span>
+          </button>
+
+        </article>
+
+      </section>
+
+
+      <!-- =================================
+           RECENT APPLICATIONS
+           ================================= -->
+
+      <section class="recent-section">
+
+        <div class="section-heading recent-heading">
+
           <div>
+
+            <span class="section-eyebrow">
+              RECENT ACTIVITY
+            </span>
+
             <h2>
-              Recent Applications
+              Recent applications
             </h2>
 
-            <p>
-              Your latest job application activity.
-            </p>
           </div>
 
           <button
-            class="view-all-button"
+            type="button"
+            class="text-button"
             @click="goToApplications"
           >
-            View All →
+            See all
+            <span>→</span>
           </button>
+
         </div>
 
-        <!-- Loading -->
+
+        <!-- LOADING -->
+
         <div
           v-if="loading"
           class="state-card"
         >
-          Loading applications...
-        </div>
-
-        <!-- Error -->
-        <div
-          v-else-if="errorMessage"
-          class="state-card error-card"
-        >
-          {{ errorMessage }}
-        </div>
-
-        <!-- Empty -->
-        <div
-          v-else-if="applications.length === 0"
-          class="state-card"
-        >
-          <h3>No applications yet</h3>
+          <div class="loading-spinner"></div>
 
           <p>
-            Start tracking your job applications by adding
-            your first application.
+            Loading your applications...
+          </p>
+        </div>
+
+
+        <!-- EMPTY -->
+
+        <div
+          v-else-if="recentApplications.length === 0"
+          class="empty-card"
+        >
+
+          <div class="empty-icon">
+            +
+          </div>
+
+          <h3>
+            No applications yet
+          </h3>
+
+          <p>
+            Start tracking your job applications
+            and keep everything organized in one place.
           </p>
 
           <button
-            class="add-button"
+            type="button"
+            class="primary-button"
             @click="goToApplications"
           >
-            Add Application
+            Add your first application
           </button>
+
         </div>
 
-        <!-- Application list -->
+
+        <!-- APPLICATION LIST -->
+
         <div
           v-else
           class="application-list"
         >
 
-        <div
+          <article
             v-for="application in recentApplications"
             :key="application.id"
-            class="application-card"
+            class="application-row"
             @click="viewApplication(application)"
-            >
+          >
+
+            <div class="company-avatar">
+              {{ getCompanyInitial(application.companyName) }}
+            </div>
+
+
             <div class="application-main">
 
-                <div class="company-info">
-                <h3>
-                    {{ application.companyName }}
-                </h3>
+              <h3>
+                {{ application.companyName }}
+              </h3>
 
-                <p>
-                    {{ application.position }}
-                </p>
-
-                <span
-                    v-if="application.location"
-                    class="location"
-                >
-                    📍 {{ application.location }}
-                </span>
-                </div>
-
-                <div class="application-meta">
-
-                <span
-                    class="status-badge"
-                    :class="getStatusClass(application.status)"
-                >
-                    {{ formatStatus(application.status) }}
-                </span>
-
-                <span
-                    v-if="application.applicationDate"
-                    class="application-date"
-                >
-                    {{ formatDate(application.applicationDate) }}
-                </span>
-
-                </div>
+              <p>
+                {{ application.position }}
+              </p>
 
             </div>
 
-            <div class="application-arrow">
-                →
+
+            <div class="application-location">
+
+              <span v-if="application.location">
+                {{ application.location }}
+              </span>
+
+              <span v-else>
+                Location not specified
+              </span>
+
             </div>
+
+
+            <div class="application-date">
+              {{ formatDate(application.applicationDate) }}
             </div>
+
+
+            <div
+              class="status-badge"
+              :class="getStatusClass(application.status)"
+            >
+              {{ formatStatus(application.status) }}
+            </div>
+
+
+            <span class="row-arrow">
+              →
+            </span>
+
+          </article>
 
         </div>
 
@@ -217,42 +523,120 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import {
+  computed,
+  onMounted,
+  ref
+} from 'vue'
+
 import { useRouter } from 'vue-router'
+
 import api from '../services/api'
+
 import Navbar from '../components/Navbar.vue'
 
+
 const router = useRouter()
+
+
+/* =================================
+   USER
+   ================================= */
 
 const name = ref(
   localStorage.getItem('name') || 'User'
 )
 
+
+/* =================================
+   APPLICATION DATA
+   ================================= */
+
 const applications = ref([])
+
 const loading = ref(true)
+
 const errorMessage = ref('')
+
+
+/* =================================
+   COMPUTED
+   ================================= */
 
 const recentApplications = computed(() => {
   return applications.value.slice(0, 5)
 })
 
+
+const activeCount = computed(() => {
+
+  return applications.value.filter(
+    application =>
+      application.status === 'WISHLIST' ||
+      application.status === 'APPLIED' ||
+      application.status === 'INTERVIEW'
+  ).length
+
+})
+
+
+const progressPercentage = computed(() => {
+
+  const total =
+    applications.value.length
+
+  if (total === 0) {
+    return 0
+  }
+
+  const completed =
+    applications.value.filter(
+      application =>
+        application.status === 'OFFER'
+    ).length
+
+  return Math.min(
+    100,
+    Math.round(
+      (completed / total) * 100
+    )
+  )
+
+})
+
+
+/* =================================
+   LOAD APPLICATIONS
+   ================================= */
+
 const loadApplications = async () => {
+
   loading.value = true
+
   errorMessage.value = ''
 
   try {
-    const response = await api.get('/applications')
 
-    applications.value = response.data
+    const response =
+      await api.get('/applications')
+
+    applications.value =
+      response.data
 
   } catch (error) {
 
     console.error(error)
 
-    if (error.response?.status === 401) {
+    if (
+      error.response?.status === 401
+    ) {
+
       localStorage.removeItem('token')
+
       router.push('/login')
+
       return
     }
 
@@ -261,17 +645,29 @@ const loadApplications = async () => {
       'Failed to load applications.'
 
   } finally {
+
     loading.value = false
   }
+
 }
+
+
+/* =================================
+   STATUS
+   ================================= */
 
 const getStatusCount = (status) => {
+
   return applications.value.filter(
-    application => application.status === status
+    application =>
+      application.status === status
   ).length
+
 }
 
+
 const formatStatus = (status) => {
+
   const statusMap = {
     WISHLIST: 'Wishlist',
     APPLIED: 'Applied',
@@ -281,385 +677,1055 @@ const formatStatus = (status) => {
   }
 
   return statusMap[status] || status
+
 }
+
 
 const getStatusClass = (status) => {
+
   return `status-${status.toLowerCase()}`
+
 }
 
-const formatDate = (date) => {
-  if (!date) {
-    return ''
+
+/* =================================
+   COMPANY
+   ================================= */
+
+const getCompanyInitial = (companyName) => {
+
+  if (!companyName) {
+    return '?'
   }
 
-  const options = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  return companyName
+    .trim()
+    .charAt(0)
+    .toUpperCase()
+
+}
+
+
+/* =================================
+   DATE
+   ================================= */
+
+const formatDate = (date) => {
+
+  if (!date) {
+    return 'No date'
   }
 
   return new Date(date).toLocaleDateString(
     'en-US',
-    options
+    {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }
   )
+
 }
+
+
+/* =================================
+   NAVIGATION
+   ================================= */
 
 const goToApplications = () => {
+
   router.push('/applications')
+
 }
 
+
 const viewApplication = (application) => {
+
   router.push(
     `/applications/${application.id}`
   )
+
 }
 
+
+/* =================================
+   INITIAL LOAD
+   ================================= */
+
 onMounted(() => {
+
   loadApplications()
+
 })
 </script>
 
+
 <style scoped>
+
+/* =========================================
+   PAGE
+   ========================================= */
+
 .dashboard-page {
   min-height: 100vh;
-  background: #f7f8fc;
+
+  background: var(--background);
 }
 
 .dashboard-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1240px;
+
   margin: 0 auto;
-  padding: 48px 32px 64px;
+
+  padding: 42px 28px 70px;
 }
 
-.welcome-section {
+
+/* =========================================
+   HERO
+   ========================================= */
+
+.hero-section {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
+
+  gap: 30px;
+
+  margin-bottom: 30px;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  color: #1a2e6f;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.hero-copy {
+  max-width: 650px;
 }
 
-.welcome-section h1 {
+.eyebrow,
+.section-eyebrow {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+}
+
+.hero-copy h1 {
   margin: 0;
-  color: #111827;
-  font-size: 32px;
-  line-height: 1.2;
+
+  color: var(--text-primary);
+
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.05;
+
+  letter-spacing: -0.055em;
 }
 
-.welcome-description {
-  margin: 10px 0 0;
-  color: #6b7280;
-  font-size: 15px;
+.hero-copy h1 span {
+  color: var(--primary);
 }
 
-.add-button {
-  padding: 12px 18px;
-  border: none;
-  border-radius: 9px;
-  background: #1a2e6f;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
+.hero-copy p {
+  margin: 14px 0 0;
 
-.add-button:hover {
-  background: #14245a;
-}
+  color: var(--text-secondary);
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 40px;
-}
-
-.stat-card {
-  padding: 22px;
-  background: #ffffff;
-  border: 1px solid #e9ebf2;
-  border-radius: 12px;
-}
-
-.stat-label {
-  color: #6b7280;
   font-size: 13px;
-  font-weight: 500;
+  line-height: 1.6;
 }
 
-.stat-value {
-  margin-top: 8px;
-  color: #111827;
-  font-size: 30px;
-  font-weight: 700;
-}
 
-.applications-section {
-  margin-top: 12px;
-}
+/* =========================================
+   BUTTONS
+   ========================================= */
 
-.section-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 18px;
-}
-
-.section-header h2 {
-  margin: 0;
-  color: #111827;
-  font-size: 21px;
-}
-
-.section-header p {
-  margin: 6px 0 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.view-all-button {
-  border: none;
-  background: transparent;
-  color: #1a2e6f;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.application-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.application-card {
-  display: flex;
+.primary-button {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px 22px;
-  background: #ffffff;
-  border: 1px solid #e9ebf2;
-  border-radius: 12px;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 40px;
+
+  padding: 9px 15px;
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--accent)
+    );
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 750;
+
   cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(49, 85, 217, 0.16);
+
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-.application-card:hover {
-  transform: translateY(-2px);
-  border-color: #d8ddef;
+.primary-button:hover {
+  transform: translateY(-1px);
+
   box-shadow:
-    0 8px 24px rgba(17, 24, 39, 0.07);
+    0 11px 25px rgba(49, 85, 217, 0.22);
 }
 
-.application-main {
-  flex: 1;
-  min-width: 0;
+.button-plus {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  width: 100%;
+
+  min-height: 38px;
+
+  padding: 8px 13px;
+
+  border: 1px solid var(--border-strong);
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: var(--text-primary);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.secondary-button:hover {
+  border-color: var(--primary);
+
+  background: var(--primary-soft);
+
+  color: var(--primary);
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 4px 0;
+
+  background: transparent;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 750;
+
+  cursor: pointer;
+}
+
+.text-button:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   ERROR
+   ========================================= */
+
+.error-banner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+
+  gap: 9px;
+
+  margin-bottom: 20px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #f1cccc;
+
+  border-radius: 9px;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  font-size: 10px;
 }
 
-.company-info {
-  min-width: 0;
-}
+.error-icon {
+  width: 18px;
+  height: 18px;
 
-.company-info h3 {
-  margin: 0;
-  color: #111827;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.company-info p {
-  margin: 6px 0 0;
-  color: #4b5563;
-  font-size: 14px;
-}
-
-.location {
-  display: inline-block;
-  margin-top: 8px;
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.application-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.application-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #f3f5fb;
-  color: #1a2e6f;
-  font-size: 18px;
-  font-weight: 600;
+
   flex-shrink: 0;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+
+  border-radius: 50%;
+
+  background: var(--danger);
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 800;
 }
 
-.application-card:hover .application-arrow {
-  background: #eef1fb;
-  transform: translateX(3px);
+
+/* =========================================
+   STATS
+   ========================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 14px;
+
+  margin-bottom: 14px;
 }
 
-.status-badge {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 11px;
+.stat-card {
+  position: relative;
+
+  min-height: 155px;
+
+  padding: 20px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 5px 20px rgba(23, 32, 51, 0.035);
+}
+
+.stat-card-main {
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      var(--primary-soft)
+    );
+
+  border-color: #e0e5ff;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+
+  font-size: 10px;
   font-weight: 700;
 }
 
+.stat-icon {
+  color: var(--primary);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stat-number {
+  margin-top: 21px;
+
+  color: var(--text-primary);
+
+  font-size: 34px;
+  font-weight: 750;
+
+  line-height: 1;
+
+  letter-spacing: -0.05em;
+}
+
+.stat-description {
+  margin: 8px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+}
+
+.stat-accent {
+  position: absolute;
+
+  right: -25px;
+  bottom: -35px;
+
+  width: 100px;
+  height: 100px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(124, 92, 252, 0.08);
+}
+
+
+/* =========================================
+   OVERVIEW
+   ========================================= */
+
+.overview-grid {
+  display: grid;
+
+  grid-template-columns:
+    1.4fr 0.8fr;
+
+  gap: 14px;
+
+  margin-bottom: 42px;
+}
+
+.overview-card,
+.progress-card {
+  min-height: 300px;
+
+  padding: 22px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 5px 20px rgba(23, 32, 51, 0.035);
+}
+
+
+/* =========================================
+   SECTION HEADING
+   ========================================= */
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: 19px;
+  font-weight: 750;
+
+  letter-spacing: -0.035em;
+}
+
+.section-eyebrow {
+  margin-bottom: 5px;
+
+  font-size: 8px;
+}
+
+
+/* =========================================
+   PIPELINE
+   ========================================= */
+
+.pipeline-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.pipeline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 39px;
+
+  padding: 0 9px;
+
+  border-radius: 7px;
+
+  transition:
+    background 0.2s ease;
+}
+
+.pipeline-row:hover {
+  background: var(--surface-soft);
+}
+
+.pipeline-info {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.pipeline-row strong {
+  color: var(--text-primary);
+
+  font-size: 11px;
+}
+
+.pipeline-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.pipeline-dot.wishlist {
+  background: #8b7cf6;
+}
+
+.pipeline-dot.applied {
+  background: #4f75df;
+}
+
+.pipeline-dot.interview {
+  background: #d99332;
+}
+
+.pipeline-dot.offer {
+  background: #25a67d;
+}
+
+.pipeline-dot.rejected {
+  background: #d65a5a;
+}
+
+
+/* =========================================
+   PROGRESS
+   ========================================= */
+
+.progress-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-percent {
+  color: var(--primary);
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.progress-circle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 17px;
+}
+
+.progress-circle {
+  width: 140px;
+  height: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      var(--primary) 0deg,
+      var(--accent) var(--progress),
+      #edf0f7 var(--progress),
+      #edf0f7 360deg
+    );
+}
+
+.progress-circle-inner {
+  width: 112px;
+  height: 112px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+}
+
+.progress-circle-inner strong {
+  color: var(--text-primary);
+
+  font-size: 25px;
+  line-height: 1;
+
+  letter-spacing: -0.04em;
+}
+
+.progress-circle-inner span {
+  margin-top: 5px;
+
+  color: var(--text-muted);
+
+  font-size: 8px;
+}
+
+.progress-message {
+  margin: 0 auto 16px;
+
+  max-width: 260px;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+  line-height: 1.55;
+
+  text-align: center;
+}
+
+
+/* =========================================
+   RECENT
+   ========================================= */
+
+.recent-section {
+  width: 100%;
+}
+
+.recent-heading {
+  margin-bottom: 14px;
+}
+
+.application-list {
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 5px 20px rgba(23, 32, 51, 0.035);
+}
+
+.application-row {
+  display: grid;
+
+  grid-template-columns:
+    40px
+    minmax(150px, 1.5fr)
+    minmax(100px, 0.8fr)
+    90px
+    auto
+    20px;
+
+  align-items: center;
+
+  gap: 13px;
+
+  min-height: 72px;
+
+  padding: 11px 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease;
+}
+
+.application-row:last-child {
+  border-bottom: 0;
+}
+
+.application-row:hover {
+  background: var(--surface-soft);
+}
+
+.company-avatar {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: var(--primary-soft);
+
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.application-main {
+  min-width: 0;
+}
+
+.application-main h3 {
+  margin: 0;
+
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 10px;
+  font-weight: 750;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.application-main p {
+  margin: 4px 0 0;
+
+  overflow: hidden;
+
+  color: var(--text-muted);
+
+  font-size: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.application-location,
+.application-date {
+  overflow: hidden;
+
+  color: var(--text-secondary);
+
+  font-size: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  width: fit-content;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 7px;
+  font-weight: 750;
+}
+
 .status-wishlist {
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .status-applied {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .status-interview {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 
 .status-offer {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-soft);
+  color: var(--success);
 }
 
 .status-rejected {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
-.application-date {
-  color: #9ca3af;
-  font-size: 12px;
+.row-arrow {
+  color: var(--text-muted);
+
+  font-size: 13px;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.state-card {
-  padding: 36px;
-  background: #ffffff;
-  border: 1px solid #e9ebf2;
-  border-radius: 12px;
+.application-row:hover .row-arrow {
+  color: var(--primary);
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================
+   STATES
+   ========================================= */
+
+.state-card,
+.empty-card {
+  min-height: 190px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  background: var(--surface);
+
   text-align: center;
-  color: #6b7280;
-}
-
-.state-card h3 {
-  margin: 0;
-  color: #111827;
 }
 
 .state-card p {
-  margin: 8px 0 20px;
-  font-size: 14px;
+  margin: 10px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
 }
 
-.error-card {
-  color: #b91c1c;
-  background: #fff7f7;
-  border-color: #fecaca;
+.loading-spinner {
+  width: 25px;
+  height: 25px;
+
+  border: 2px solid var(--primary-soft);
+
+  border-top-color: var(--primary);
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
 }
 
-@media (max-width: 800px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.empty-icon {
+  width: 40px;
+  height: 40px;
 
-  .welcome-section {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  .application-main {
-    align-items: flex-start;
-    flex-direction: column;
+  margin-bottom: 12px;
 
-    width: 100%;
+  border-radius: 12px;
 
-    gap: 14px;
-  }
+  background: var(--primary-soft);
 
-  .application-meta {
-    width: 100%;
+  color: var(--primary);
 
-    align-items: flex-start;
-    flex-direction: row;
+  font-size: 20px;
+}
 
-    justify-content: space-between;
+.empty-card h3 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: 13px;
+}
+
+.empty-card p {
+  max-width: 350px;
+
+  margin: 7px 0 15px;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@media (max-width: 520px) {
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 950px) {
+
   .dashboard-container {
-    padding: 32px 18px 48px;
+    padding: 35px 20px 60px;
   }
 
-  .navbar-inner {
-    padding: 0 18px;
+  .overview-grid {
+    grid-template-columns: 1fr;
   }
 
-  .user-name {
+  .application-row {
+    grid-template-columns:
+      40px
+      minmax(150px, 1fr)
+      auto
+      20px;
+  }
+
+  .application-location {
     display: none;
+  }
+
+  .application-date {
+    display: none;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+  .dashboard-container {
+    padding: 28px 16px 50px;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 18px;
+  }
+
+  .hero-copy h1 {
+    font-size: 35px;
+  }
+
+  .hero-copy p {
+    font-size: 11px;
+  }
+
+  .primary-button {
+    width: 100%;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
   }
 
-  .welcome-section h1 {
-    font-size: 26px;
+  .stat-card {
+    min-height: 130px;
   }
 
-    .application-card {
-    align-items: flex-start;
-    gap: 14px;
-
+  .overview-card,
+  .progress-card {
     padding: 18px;
   }
 
-  .application-main {
-    gap: 12px;
+  .application-row {
+    grid-template-columns:
+      38px
+      1fr
+      auto;
+
+    gap: 10px;
+
+    padding: 11px 13px;
   }
 
-  .application-meta {
-    align-items: flex-start;
-    flex-direction: column;
+  .status-badge {
+    grid-column: 2;
+    grid-row: 2;
 
-    gap: 6px;
+    margin-top: -4px;
   }
 
-  .application-arrow {
-    align-self: flex-end;
+  .row-arrow {
+    grid-column: 3;
+    grid-row: 1 / span 2;
   }
+
 }
+
+
+/* =========================================
+   SMALL MOBILE
+   ========================================= */
+
+@media (max-width: 400px) {
+
+  .dashboard-container {
+    padding: 24px 12px 45px;
+  }
+
+  .hero-copy h1 {
+    font-size: 30px;
+  }
+
+  .stat-number {
+    font-size: 30px;
+  }
+
+  .section-heading h2 {
+    font-size: 17px;
+  }
+
+  .text-button {
+    font-size: 8px;
+  }
+
+  .application-main h3 {
+    font-size: 9px;
+  }
+
+}
+
 </style>

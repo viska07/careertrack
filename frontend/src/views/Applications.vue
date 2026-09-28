@@ -5,142 +5,280 @@
 
     <main class="applications-container">
 
-      <!-- Page Header -->
+      <!-- =================================
+           PAGE HEADER
+           ================================= -->
+
       <section class="page-header">
 
-        <div>
-          <p class="eyebrow">
-            JOB TRACKER
-          </p>
+        <div class="header-copy">
+
+          <span class="eyebrow">
+            APPLICATIONS
+          </span>
 
           <h1>
-            My Applications
+            Your job search
           </h1>
 
-          <p class="page-description">
-            Manage and track all of your job applications.
+          <p>
+            Track every opportunity and keep your
+            application process organized.
           </p>
+
         </div>
 
         <button
+          type="button"
           class="primary-button"
-          @click="openCreateForm"
+          @click="openCreateModal"
         >
-          + Add Application
+          <span class="button-plus">
+            +
+          </span>
+
+          Add application
         </button>
 
       </section>
 
-      <!-- Search & Filter -->
-      <section class="filter-section">
+
+      <!-- =================================
+           ERROR
+           ================================= -->
+
+      <div
+        v-if="errorMessage"
+        class="error-banner"
+      >
+        <span class="error-icon">
+          !
+        </span>
+
+        <span>
+          {{ errorMessage }}
+        </span>
+      </div>
+
+
+      <!-- =================================
+           FILTER CARD
+           ================================= -->
+
+      <section class="filter-card">
 
         <div class="search-wrapper">
 
+          <span class="search-icon">
+            ⌕
+          </span>
+
           <input
-            v-model="searchInput"
+            v-model="search"
             type="text"
             placeholder="Search company or position..."
-            @keyup.enter="applyFilters"
+            @input="handleSearch"
           />
 
           <button
-            class="search-button"
-            @click="applyFilters"
+            v-if="search"
+            type="button"
+            class="clear-search"
+            @click="clearSearch"
           >
-            Search
+            ×
           </button>
 
         </div>
 
-        <select
-          v-model="selectedStatus"
-          @change="applyFilters"
-        >
-          <option value="">
-            All Status
-          </option>
 
-          <option value="WISHLIST">
+        <div class="status-filter">
+
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: !status
+            }"
+            @click="changeStatus('')"
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: status === 'WISHLIST'
+            }"
+            @click="changeStatus('WISHLIST')"
+          >
             Wishlist
-          </option>
+          </button>
 
-          <option value="APPLIED">
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: status === 'APPLIED'
+            }"
+            @click="changeStatus('APPLIED')"
+          >
             Applied
-          </option>
+          </button>
 
-          <option value="INTERVIEW">
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: status === 'INTERVIEW'
+            }"
+            @click="changeStatus('INTERVIEW')"
+          >
             Interview
-          </option>
+          </button>
 
-          <option value="OFFER">
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: status === 'OFFER'
+            }"
+            @click="changeStatus('OFFER')"
+          >
             Offer
-          </option>
+          </button>
 
-          <option value="REJECTED">
+          <button
+            type="button"
+            class="filter-button"
+            :class="{
+              active: status === 'REJECTED'
+            }"
+            @click="changeStatus('REJECTED')"
+          >
             Rejected
-          </option>
-        </select>
+          </button>
+
+        </div>
 
       </section>
 
-      <div class="result-info">
-  <span>
-    {{ applications.length }}
-    {{ applications.length === 1 ? 'application' : 'applications' }}
-  </span>
 
-  <button
-        v-if="searchInput || selectedStatus"
-        class="clear-filter-button"
-        @click="clearFilters"
-    >
-        Clear filters
-    </button>
-    </div>
+      <!-- =================================
+           RESULT SUMMARY
+           ================================= -->
 
-      <!-- Error -->
-      <div
-        v-if="errorMessage"
-        class="alert error-alert"
-      >
-        {{ errorMessage }}
+      <div class="result-bar">
+
+        <div>
+          <strong>
+            {{ applications.length }}
+          </strong>
+
+          <span>
+            {{
+              applications.length === 1
+                ? 'application'
+                : 'applications'
+            }}
+          </span>
+        </div>
+
+        <div
+          v-if="search || status"
+          class="active-filters"
+        >
+
+          <span class="filter-label">
+            Filtered by
+          </span>
+
+          <button
+            v-if="search"
+            type="button"
+            class="filter-chip"
+            @click="clearSearch"
+          >
+            "{{ search }}"
+            <span>×</span>
+          </button>
+
+          <button
+            v-if="status"
+            type="button"
+            class="filter-chip"
+            @click="changeStatus('')"
+          >
+            {{ formatStatus(status) }}
+            <span>×</span>
+          </button>
+
+        </div>
+
       </div>
 
-      <!-- Loading -->
+
+      <!-- =================================
+           LOADING
+           ================================= -->
+
       <div
         v-if="loading"
         class="state-card"
       >
-        Loading applications...
+
+        <div class="loading-spinner"></div>
+
+        <p>
+          Loading applications...
+        </p>
+
       </div>
 
-      <!-- Empty -->
+
+      <!-- =================================
+           EMPTY
+           ================================= -->
+
       <div
         v-else-if="applications.length === 0"
-        class="state-card"
+        class="empty-card"
       >
+
         <div class="empty-icon">
-          📋
+          +
         </div>
 
         <h2>
           No applications found
         </h2>
 
-        <p>
+        <p v-if="search || status">
           Try changing your search or filter,
           or add a new application.
         </p>
 
+        <p v-else>
+          Start tracking your job applications
+          and keep everything organized.
+        </p>
+
         <button
+          type="button"
           class="primary-button"
-          @click="openCreateForm"
+          @click="openCreateModal"
         >
-          + Add Application
+          Add application
         </button>
+
       </div>
 
-      <!-- Application List -->
+
+      <!-- =================================
+           APPLICATION LIST
+           ================================= -->
+
       <section
         v-else
         class="application-list"
@@ -150,30 +288,25 @@
           v-for="application in applications"
           :key="application.id"
           class="application-card"
+          @click="viewApplication(application)"
         >
 
-          <div class="application-content">
+          <!-- COMPANY -->
 
-            <div class="company-section">
+          <div class="company-avatar">
+            {{ getCompanyInitial(application.companyName) }}
+          </div>
+
+
+          <!-- MAIN -->
+
+          <div class="application-main">
+
+            <div class="application-title-row">
 
               <h2>
                 {{ application.companyName }}
               </h2>
-
-              <p class="position">
-                {{ application.position }}
-              </p>
-
-              <p
-                v-if="application.location"
-                class="location"
-              >
-                📍 {{ application.location }}
-              </p>
-
-            </div>
-
-            <div class="application-info">
 
               <span
                 class="status-badge"
@@ -182,41 +315,71 @@
                 {{ formatStatus(application.status) }}
               </span>
 
-              <span
-                v-if="application.applicationDate"
-                class="application-date"
-              >
+            </div>
+
+            <p class="position">
+              {{ application.position }}
+            </p>
+
+            <div class="meta-row">
+
+              <span v-if="application.location">
+                <span class="meta-icon">⌖</span>
+                {{ application.location }}
+              </span>
+
+              <span>
+                <span class="meta-icon">◷</span>
                 {{ formatDate(application.applicationDate) }}
               </span>
 
             </div>
 
+            <p
+              v-if="application.notes"
+              class="notes-preview"
+            >
+              {{ application.notes }}
+            </p>
+
           </div>
 
-          <div class="application-actions">
+
+          <!-- ACTIONS -->
+
+          <div
+            class="card-actions"
+            @click.stop
+          >
 
             <button
-                class="view-button"
-                @click="viewApplication(application)"
+              type="button"
+              class="icon-button"
+              title="View application"
+              @click="viewApplication(application)"
             >
-                View
+              →
             </button>
 
             <button
-                class="secondary-button"
-                @click="openEditForm(application)"
+              type="button"
+              class="icon-button edit-button"
+              title="Edit application"
+              @click="openEditModal(application)"
             >
-                Edit
+              ✎
             </button>
 
             <button
-                class="danger-button"
-                @click="deleteApplication(application)"
+              type="button"
+              class="icon-button delete-button"
+              title="Delete application"
+              @click="openDeleteModal(application)"
             >
-                Delete
+              ×
             </button>
 
-            </div>
+          </div>
 
         </article>
 
@@ -224,80 +387,102 @@
 
     </main>
 
-    <!-- Application Modal -->
+
+    <!-- =================================
+         CREATE / EDIT MODAL
+         ================================= -->
+
     <div
-      v-if="showForm"
+      v-if="showFormModal"
       class="modal-overlay"
-      @click.self="closeForm"
+      @click.self="closeFormModal"
     >
 
-      <div class="modal">
+      <div class="modal-card">
 
         <div class="modal-header">
 
           <div>
+            <span class="modal-eyebrow">
+              {{ editingId ? 'EDIT APPLICATION' : 'NEW APPLICATION' }}
+            </span>
+
             <h2>
               {{
-                editingApplication
-                  ? 'Edit Application'
-                  : 'Add Application'
+                editingId
+                  ? 'Update application'
+                  : 'Add application'
               }}
             </h2>
 
             <p>
               {{
-                editingApplication
-                  ? 'Update your application information.'
-                  : 'Add a new job application to your tracker.'
+                editingId
+                  ? 'Keep your application details up to date.'
+                  : 'Add a new opportunity to your career tracker.'
               }}
             </p>
           </div>
 
           <button
-            class="close-button"
-            @click="closeForm"
+            type="button"
+            class="modal-close"
+            @click="closeFormModal"
           >
             ×
           </button>
 
         </div>
 
+
         <form
           class="application-form"
-          @submit.prevent="submitForm"
+          @submit.prevent="saveApplication"
         >
+
+          <!-- COMPANY -->
 
           <div class="form-group">
 
             <label for="companyName">
-              Company Name
+              Company name
+              <span>*</span>
             </label>
 
             <input
               id="companyName"
               v-model="form.companyName"
               type="text"
-              placeholder="e.g. Microsoft"
-              required
+              maxlength="150"
+              placeholder="e.g. Google"
+              :disabled="saving"
             />
 
           </div>
+
+
+          <!-- POSITION -->
 
           <div class="form-group">
 
             <label for="position">
               Position
+              <span>*</span>
             </label>
 
             <input
               id="position"
               v-model="form.position"
               type="text"
+              maxlength="150"
               placeholder="e.g. Frontend Developer"
-              required
+              :disabled="saving"
             />
 
           </div>
+
+
+          <!-- STATUS -->
 
           <div class="form-row">
 
@@ -305,12 +490,13 @@
 
               <label for="status">
                 Status
+                <span>*</span>
               </label>
 
               <select
                 id="status"
                 v-model="form.status"
-                required
+                :disabled="saving"
               >
                 <option value="WISHLIST">
                   Wishlist
@@ -335,21 +521,28 @@
 
             </div>
 
+
+            <!-- DATE -->
+
             <div class="form-group">
 
               <label for="applicationDate">
-                Application Date
+                Application date
               </label>
 
               <input
                 id="applicationDate"
                 v-model="form.applicationDate"
                 type="date"
+                :disabled="saving"
               />
 
             </div>
 
           </div>
+
+
+          <!-- LOCATION -->
 
           <div class="form-group">
 
@@ -361,10 +554,15 @@
               id="location"
               v-model="form.location"
               type="text"
-              placeholder="e.g. Jakarta"
+              maxlength="150"
+              placeholder="e.g. Jakarta / Remote"
+              :disabled="saving"
             />
 
           </div>
+
+
+          <!-- JOB URL -->
 
           <div class="form-group">
 
@@ -376,10 +574,15 @@
               id="jobUrl"
               v-model="form.jobUrl"
               type="url"
-              placeholder="https://example.com/job"
+              maxlength="500"
+              placeholder="https://..."
+              :disabled="saving"
             />
 
           </div>
+
+
+          <!-- NOTES -->
 
           <div class="form-group">
 
@@ -391,24 +594,33 @@
               id="notes"
               v-model="form.notes"
               rows="4"
-              placeholder="Add notes about this application..."
+              placeholder="Add any notes about this application..."
+              :disabled="saving"
             ></textarea>
 
           </div>
 
+
+          <!-- FORM ERROR -->
+
           <div
             v-if="formError"
-            class="alert error-alert"
+            class="form-error"
           >
+            <span>!</span>
             {{ formError }}
           </div>
+
+
+          <!-- ACTIONS -->
 
           <div class="modal-actions">
 
             <button
               type="button"
               class="secondary-button"
-              @click="closeForm"
+              @click="closeFormModal"
+              :disabled="saving"
             >
               Cancel
             </button>
@@ -416,15 +628,22 @@
             <button
               type="submit"
               class="primary-button"
-              :disabled="formLoading"
+              :disabled="saving"
             >
+
+              <span
+                v-if="saving"
+                class="button-spinner"
+              ></span>
+
               {{
-                formLoading
+                saving
                   ? 'Saving...'
-                  : editingApplication
-                    ? 'Save Changes'
-                    : 'Add Application'
+                  : editingId
+                    ? 'Save changes'
+                    : 'Add application'
               }}
+
             </button>
 
           </div>
@@ -435,29 +654,152 @@
 
     </div>
 
+
+    <!-- =================================
+         DELETE MODAL
+         ================================= -->
+
+    <div
+      v-if="showDeleteModal"
+      class="modal-overlay"
+      @click.self="closeDeleteModal"
+    >
+
+      <div class="delete-modal">
+
+        <div class="delete-icon">
+          !
+        </div>
+
+        <div class="delete-content">
+
+          <span class="modal-eyebrow">
+            DELETE APPLICATION
+          </span>
+
+          <h2>
+            Delete this application?
+          </h2>
+
+          <p>
+            You're about to remove
+            <strong>
+              {{ selectedApplication?.companyName }}
+            </strong>
+            from your applications.
+            This action cannot be undone.
+          </p>
+
+        </div>
+
+
+        <div
+          v-if="deleteError"
+          class="form-error"
+        >
+          <span>!</span>
+          {{ deleteError }}
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            @click="closeDeleteModal"
+            :disabled="deleting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="danger-button"
+            @click="deleteApplication"
+            :disabled="deleting"
+          >
+
+            <span
+              v-if="deleting"
+              class="button-spinner"
+            ></span>
+
+            {{
+              deleting
+                ? 'Deleting...'
+                : 'Delete application'
+            }}
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 </template>
 
+
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {
+  onMounted,
+  reactive,
+  ref
+} from 'vue'
+
+import {
+  useRoute,
+  useRouter
+} from 'vue-router'
+
 import api from '../services/api'
+
 import Navbar from '../components/Navbar.vue'
+
 
 const router = useRouter()
 const route = useRoute()
+
+
+/* =================================
+   DATA
+   ================================= */
+
 const applications = ref([])
 
-const loading = ref(false)
+const loading = ref(true)
+
 const errorMessage = ref('')
 
-const searchInput = ref('')
-const selectedStatus = ref('')
 
-const showForm = ref(false)
-const editingApplication = ref(null)
-const formLoading = ref(false)
+/* =================================
+   FILTER
+   ================================= */
+
+const search = ref(
+  route.query.search || ''
+)
+
+const status = ref(
+  route.query.status || ''
+)
+
+
+/* =================================
+   FORM MODAL
+   ================================= */
+
+const showFormModal = ref(false)
+
+const editingId = ref(null)
+
+const saving = ref(false)
+
 const formError = ref('')
+
 
 const form = reactive({
   companyName: '',
@@ -469,37 +811,63 @@ const form = reactive({
   notes: ''
 })
 
+
+/* =================================
+   DELETE MODAL
+   ================================= */
+
+const showDeleteModal = ref(false)
+
+const selectedApplication = ref(null)
+
+const deleting = ref(false)
+
+const deleteError = ref('')
+
+
+/* =================================
+   LOAD APPLICATIONS
+   ================================= */
+
 const loadApplications = async () => {
 
   loading.value = true
+
   errorMessage.value = ''
 
   try {
 
     const params = {}
 
-    if (searchInput.value.trim()) {
-      params.search = searchInput.value.trim()
+    if (search.value.trim()) {
+      params.search =
+        search.value.trim()
     }
 
-    if (selectedStatus.value) {
-      params.status = selectedStatus.value
+    if (status.value) {
+      params.status =
+        status.value
     }
 
-    const response = await api.get(
-      '/applications',
-      { params }
-    )
+    const response =
+      await api.get(
+        '/applications',
+        { params }
+      )
 
-    applications.value = response.data
+    applications.value =
+      response.data
 
   } catch (error) {
 
     console.error(error)
 
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      router.push('/login')
+    if (
+      error.response?.status === 401
+    ) {
+
+      logoutAndRedirect()
+
       return
     }
 
@@ -510,20 +878,87 @@ const loadApplications = async () => {
   } finally {
 
     loading.value = false
-
   }
+
 }
 
-const applyFilters = () => {
+
+/* =================================
+   SEARCH
+   ================================= */
+
+let searchTimer = null
+
+const handleSearch = () => {
+
+  clearTimeout(searchTimer)
+
+  searchTimer = setTimeout(() => {
+
+    updateQuery()
+
+    loadApplications()
+
+  }, 350)
+
+}
+
+
+const clearSearch = () => {
+
+  search.value = ''
+
+  updateQuery()
+
   loadApplications()
+
 }
 
-const clearFilters = async () => {
-  searchInput.value = ''
-  selectedStatus.value = ''
 
-  await loadApplications()
+/* =================================
+   STATUS
+   ================================= */
+
+const changeStatus = (newStatus) => {
+
+  status.value = newStatus
+
+  updateQuery()
+
+  loadApplications()
+
 }
+
+
+/* =================================
+   QUERY
+   ================================= */
+
+const updateQuery = () => {
+
+  const query = {}
+
+  if (search.value.trim()) {
+    query.search =
+      search.value.trim()
+  }
+
+  if (status.value) {
+    query.status =
+      status.value
+  }
+
+  router.replace({
+    path: '/applications',
+    query
+  })
+
+}
+
+
+/* =================================
+   FORM
+   ================================= */
 
 const resetForm = () => {
 
@@ -536,75 +971,133 @@ const resetForm = () => {
   form.notes = ''
 
   formError.value = ''
+
 }
 
-const viewApplication = (application) => {
 
-  router.push(
-    `/applications/${application.id}`
-  )
-}
+const openCreateModal = () => {
 
-const openCreateForm = () => {
-
-  editingApplication.value = null
+  editingId.value = null
 
   resetForm()
 
-  showForm.value = true
+  showFormModal.value = true
+
 }
 
-const openEditForm = (application) => {
 
-  editingApplication.value = application
+const openEditModal = (application) => {
 
-  form.companyName = application.companyName || ''
-  form.position = application.position || ''
-  form.status = application.status || 'WISHLIST'
+  editingId.value =
+    application.id
+
+  form.companyName =
+    application.companyName || ''
+
+  form.position =
+    application.position || ''
+
+  form.status =
+    application.status || 'WISHLIST'
+
   form.applicationDate =
     application.applicationDate || ''
-  form.jobUrl = application.jobUrl || ''
-  form.location = application.location || ''
-  form.notes = application.notes || ''
+
+  form.jobUrl =
+    application.jobUrl || ''
+
+  form.location =
+    application.location || ''
+
+  form.notes =
+    application.notes || ''
 
   formError.value = ''
 
-  showForm.value = true
+  showFormModal.value = true
+
 }
 
-const closeForm = () => {
 
-  if (formLoading.value) {
+const closeFormModal = () => {
+
+  if (saving.value) {
     return
   }
 
-  showForm.value = false
-  editingApplication.value = null
+  showFormModal.value = false
+
+  editingId.value = null
+
   resetForm()
+
 }
 
-const submitForm = async () => {
+
+/* =================================
+   SAVE
+   ================================= */
+
+const saveApplication = async () => {
 
   formError.value = ''
-  formLoading.value = true
+
+  if (!form.companyName.trim()) {
+
+    formError.value =
+      'Company name is required.'
+
+    return
+  }
+
+  if (!form.position.trim()) {
+
+    formError.value =
+      'Position is required.'
+
+    return
+  }
+
+  if (!form.status) {
+
+    formError.value =
+      'Status is required.'
+
+    return
+  }
+
+  saving.value = true
 
   try {
 
     const payload = {
-      companyName: form.companyName,
-      position: form.position,
-      status: form.status,
+      companyName:
+        form.companyName.trim(),
+
+      position:
+        form.position.trim(),
+
+      status:
+        form.status,
+
       applicationDate:
         form.applicationDate || null,
-      jobUrl: form.jobUrl || null,
-      location: form.location || null,
-      notes: form.notes || null
+
+      jobUrl:
+        form.jobUrl.trim() || null,
+
+      location:
+        form.location.trim() || null,
+
+      notes:
+        form.notes.trim() || null
     }
 
-    if (editingApplication.value) {
+
+    if (editingId.value) {
 
       await api.put(
-        `/applications/${editingApplication.value.id}`,
+        `/applications/${editingId.value}`,
         payload
       )
 
@@ -617,7 +1110,11 @@ const submitForm = async () => {
 
     }
 
-    closeForm()
+    showFormModal.value = false
+
+    editingId.value = null
+
+    resetForm()
 
     await loadApplications()
 
@@ -625,62 +1122,149 @@ const submitForm = async () => {
 
     console.error(error)
 
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      router.push('/login')
+    if (
+      error.response?.status === 401
+    ) {
+
+      logoutAndRedirect()
+
       return
     }
 
     formError.value =
       error.response?.data?.message ||
-      'Failed to save application.'
+      'Unable to save application.'
 
   } finally {
 
-    formLoading.value = false
-
+    saving.value = false
   }
+
 }
 
-const deleteApplication = async (application) => {
 
-  const confirmed = window.confirm(
-    `Delete application for ${application.companyName}?`
-  )
+/* =================================
+   DELETE
+   ================================= */
 
-  if (!confirmed) {
+const openDeleteModal = (application) => {
+
+  selectedApplication.value =
+    application
+
+  deleteError.value = ''
+
+  showDeleteModal.value = true
+
+}
+
+
+const closeDeleteModal = () => {
+
+  if (deleting.value) {
     return
   }
+
+  showDeleteModal.value = false
+
+  selectedApplication.value = null
+
+  deleteError.value = ''
+
+}
+
+
+const deleteApplication = async () => {
+
+  if (!selectedApplication.value) {
+    return
+  }
+
+  deleting.value = true
+
+  deleteError.value = ''
 
   try {
 
     await api.delete(
-      `/applications/${application.id}`
+      `/applications/${selectedApplication.value.id}`
     )
 
-    applications.value =
-      applications.value.filter(
-        item => item.id !== application.id
-      )
+    showDeleteModal.value = false
+
+    selectedApplication.value = null
+
+    await loadApplications()
 
   } catch (error) {
 
     console.error(error)
 
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      router.push('/login')
+    if (
+      error.response?.status === 401
+    ) {
+
+      logoutAndRedirect()
+
       return
     }
 
-    errorMessage.value =
+    deleteError.value =
       error.response?.data?.message ||
-      'Failed to delete application.'
+      'Unable to delete application.'
 
+  } finally {
+
+    deleting.value = false
   }
+
 }
 
-const formatStatus = (status) => {
+
+/* =================================
+   NAVIGATION
+   ================================= */
+
+const viewApplication = (application) => {
+
+  router.push(
+    `/applications/${application.id}`
+  )
+
+}
+
+
+const logoutAndRedirect = () => {
+
+  localStorage.removeItem('token')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('name')
+  localStorage.removeItem('email')
+
+  router.push('/login')
+
+}
+
+
+/* =================================
+   HELPERS
+   ================================= */
+
+const getCompanyInitial = (companyName) => {
+
+  if (!companyName) {
+    return '?'
+  }
+
+  return companyName
+    .trim()
+    .charAt(0)
+    .toUpperCase()
+
+}
+
+
+const formatStatus = (value) => {
 
   const statusMap = {
     WISHLIST: 'Wishlist',
@@ -690,17 +1274,22 @@ const formatStatus = (status) => {
     REJECTED: 'Rejected'
   }
 
-  return statusMap[status] || status
+  return statusMap[value] || value
+
 }
 
-const getStatusClass = (status) => {
-  return `status-${status.toLowerCase()}`
+
+const getStatusClass = (value) => {
+
+  return `status-${value.toLowerCase()}`
+
 }
+
 
 const formatDate = (date) => {
 
   if (!date) {
-    return ''
+    return 'No date'
   }
 
   return new Date(date).toLocaleDateString(
@@ -711,341 +1300,798 @@ const formatDate = (date) => {
       day: 'numeric'
     }
   )
+
 }
+
+
+/* =================================
+   INITIAL LOAD
+   ================================= */
 
 onMounted(async () => {
 
   await loadApplications()
 
-  const editId = route.query.edit
+  const editId =
+    route.query.edit
 
   if (editId) {
 
-    const application = applications.value.find(
-      item => String(item.id) === String(editId)
-    )
+    const application =
+      applications.value.find(
+        item =>
+          String(item.id) ===
+          String(editId)
+      )
 
     if (application) {
-      openEditForm(application)
+
+      openEditModal(application)
+
+      router.replace({
+        path: '/applications',
+        query: {
+          ...route.query,
+          edit: undefined
+        }
+      })
+
     }
 
   }
+
 })
 
 </script>
 
+
 <style scoped>
+
+/* =========================================
+   PAGE
+   ========================================= */
+
 .applications-page {
   min-height: 100vh;
-  background: #f7f8fc;
+
+  background: var(--background);
 }
 
 .applications-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1240px;
+
   margin: 0 auto;
-  padding: 48px 32px 64px;
+
+  padding: 42px 28px 70px;
 }
+
+
+/* =========================================
+   HEADER
+   ========================================= */
 
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
+
+  gap: 30px;
+
   margin-bottom: 30px;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  color: #1a2e6f;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.header-copy {
+  max-width: 650px;
 }
 
-.page-header h1 {
+.eyebrow,
+.modal-eyebrow {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+}
+
+.header-copy h1 {
   margin: 0;
-  color: #111827;
-  font-size: 32px;
+
+  color: var(--text-primary);
+
+  font-size: clamp(34px, 4vw, 50px);
+  line-height: 1.05;
+
+  letter-spacing: -0.055em;
 }
 
-.page-description {
-  margin: 8px 0 0;
-  color: #6b7280;
-  font-size: 15px;
+.header-copy p {
+  margin: 14px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+  line-height: 1.6;
 }
+
+
+/* =========================================
+   BUTTON
+   ========================================= */
 
 .primary-button {
-  padding: 11px 17px;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 40px;
+
+  padding: 9px 15px;
+
   border-radius: 9px;
-  background: #1a2e6f;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--accent)
+    );
+
   color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
+
+  font-size: 10px;
+  font-weight: 750;
+
   cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(49, 85, 217, 0.16);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.primary-button:hover {
-  background: #14245a;
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 11px 25px rgba(49, 85, 217, 0.22);
 }
 
 .primary-button:disabled {
-  opacity: 0.65;
+  opacity: 0.6;
+
   cursor: not-allowed;
 }
 
-.filter-section {
+.button-plus {
+  font-size: 15px;
+}
+
+
+/* =========================================
+   ERROR
+   ========================================= */
+
+.error-banner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+
+  gap: 9px;
+
+  margin-bottom: 20px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #f1cccc;
+
+  border-radius: 9px;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  font-size: 10px;
+}
+
+.error-icon {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--danger);
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+
+/* =========================================
+   FILTER
+   ========================================= */
+
+.filter-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 12px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 13px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 5px 20px rgba(23, 32, 51, 0.035);
 }
 
 .search-wrapper {
-  flex: 1;
-  display: flex;
-  gap: 8px;
-}
+  position: relative;
 
-.search-wrapper input,
-.filter-section select {
-  height: 42px;
-  border: 1px solid #d9dce5;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 14px;
-  outline: none;
+  flex: 1;
 }
 
 .search-wrapper input {
   width: 100%;
-  padding: 0 13px;
-}
+  height: 38px;
 
-.filter-section select {
-  min-width: 160px;
-  padding: 0 12px;
-}
+  padding:
+    0 35px
+    0 34px;
 
-.search-wrapper input:focus,
-.filter-section select:focus,
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  border-color: #1a2e6f;
-}
+  border: 1px solid var(--border-strong);
 
-.search-button {
-  height: 42px;
-  padding: 0 17px;
-  border: none;
   border-radius: 8px;
-  background: #eef1fb;
-  color: #1a2e6f;
-  font-size: 14px;
-  font-weight: 600;
+
+  background: var(--surface-soft);
+
+  color: var(--text-primary);
+
+  font-size: 10px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.search-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-wrapper input:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px var(--primary-soft);
+}
+
+.search-icon {
+  position: absolute;
+
+  left: 12px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: var(--text-muted);
+
+  font-size: 16px;
+
+  pointer-events: none;
+}
+
+.clear-search {
+  position: absolute;
+
+  right: 10px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--border);
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+
   cursor: pointer;
 }
 
-.search-button:hover {
-  background: #e3e7f7;
+.status-filter {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  overflow-x: auto;
+
+  padding-bottom: 1px;
 }
 
-.alert {
-  margin-bottom: 20px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 13px;
+.filter-button {
+  flex-shrink: 0;
+
+  min-height: 32px;
+
+  padding: 6px 10px;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-.error-alert {
-  border: 1px solid #fecaca;
-  background: #fff7f7;
-  color: #b91c1c;
+.filter-button:hover {
+  background: var(--primary-soft);
+
+  color: var(--primary);
 }
 
-.state-card {
-  padding: 50px 24px;
-  border: 1px solid #e9ebf2;
-  border-radius: 12px;
-  background: #ffffff;
-  text-align: center;
+.filter-button.active {
+  background: var(--primary);
+
+  color: #ffffff;
 }
 
-.empty-icon {
-  margin-bottom: 10px;
-  font-size: 32px;
+
+/* =========================================
+   RESULT BAR
+   ========================================= */
+
+.result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  min-height: 52px;
 }
 
-.state-card h2 {
-  margin: 0;
-  color: #111827;
-  font-size: 20px;
+.result-bar > div:first-child {
+  display: flex;
+  align-items: baseline;
+
+  gap: 4px;
 }
 
-.state-card p {
-  max-width: 450px;
-  margin: 8px auto 22px;
-  color: #6b7280;
-  font-size: 14px;
+.result-bar strong {
+  color: var(--text-primary);
+
+  font-size: 12px;
 }
+
+.result-bar > div:first-child span {
+  color: var(--text-muted);
+
+  font-size: 9px;
+}
+
+.active-filters {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.filter-label {
+  color: var(--text-muted);
+
+  font-size: 8px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px 8px;
+
+  border: 1px solid #dce2ff;
+
+  border-radius: 999px;
+
+  background: var(--primary-soft);
+
+  color: var(--primary);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.filter-chip span {
+  font-size: 11px;
+}
+
+
+/* =========================================
+   APPLICATION LIST
+   ========================================= */
 
 .application-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+
+  gap: 9px;
 }
 
 .application-card {
+  display: grid;
+
+  grid-template-columns:
+    42px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 16px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 13px;
+
+  background: var(--surface);
+
+  box-shadow:
+    0 5px 20px rgba(23, 32, 51, 0.035);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.application-card:hover {
+  transform: translateY(-1px);
+
+  border-color: #dce2ff;
+
+  box-shadow:
+    0 9px 25px rgba(23, 32, 51, 0.07);
+}
+
+.company-avatar {
+  width: 42px;
+  height: 42px;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: center;
 
-  padding: 20px 22px;
+  border-radius: 11px;
 
-  border: 1px solid #e9ebf2;
-  border-radius: 12px;
-  background: #ffffff;
+  background:
+    linear-gradient(
+      145deg,
+      var(--primary-soft),
+      var(--accent-soft)
+    );
+
+  color: var(--primary);
+
+  font-size: 13px;
+  font-weight: 800;
 }
 
-.application-content {
-  flex: 1;
+.application-main {
   min-width: 0;
+}
 
+.application-title-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
 
-.company-section {
+  gap: 9px;
+
   min-width: 0;
 }
 
-.company-section h2 {
+.application-title-row h2 {
   margin: 0;
-  color: #111827;
-  font-size: 17px;
+
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 12px;
+  font-weight: 750;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .position {
-  margin: 6px 0 0;
-  color: #4b5563;
-  font-size: 14px;
+  margin: 5px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
 }
 
-.location {
-  margin: 8px 0 0;
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.application-info {
+.meta-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 8px;
+
+  color: var(--text-muted);
+
+  font-size: 8px;
 }
+
+.meta-row span {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 3px;
+}
+
+.meta-icon {
+  color: var(--primary);
+
+  font-size: 10px;
+}
+
+.notes-preview {
+  max-width: 700px;
+
+  margin: 8px 0 0;
+
+  overflow: hidden;
+
+  color: var(--text-muted);
+
+  font-size: 8px;
+  line-height: 1.5;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   STATUS
+   ========================================= */
 
 .status-badge {
-  display: inline-flex;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 7px;
+  font-weight: 750;
 }
 
 .status-wishlist {
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .status-applied {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .status-interview {
-  background: #fef3c7;
-  color: #b45309;
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 
 .status-offer {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-soft);
+  color: var(--success);
 }
 
 .status-rejected {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
-.application-date {
-  color: #9ca3af;
-  font-size: 12px;
-}
 
-.application-actions {
+/* =========================================
+   ACTIONS
+   ========================================= */
+
+.card-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+
+  gap: 5px;
 }
 
-.view-button,
-.secondary-button,
-.danger-button {
-  padding: 8px 13px;
+.icon-button {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+
   border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
 
-.view-button {
-  padding: 8px 13px;
-  border: none;
-  border-radius: 7px;
-  background: #eef1fb;
-  color: #1a2e6f;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.view-button:hover {
-  background: #e3e7f7;
-}
-
-.secondary-button {
-  border: 1px solid #d9dce5;
   background: #ffffff;
-  color: #374151;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-.secondary-button:hover {
-  background: #f9fafb;
+.icon-button:hover {
+  color: var(--primary);
+
+  border-color: #dce2ff;
+
+  background: var(--primary-soft);
 }
 
-.danger-button {
-  border: 1px solid #fecaca;
-  background: #fff7f7;
-  color: #b91c1c;
+.delete-button:hover {
+  color: var(--danger);
+
+  border-color: #edcaca;
+
+  background: var(--danger-soft);
 }
 
-.danger-button:hover {
-  background: #fee2e2;
+
+/* =========================================
+   STATES
+   ========================================= */
+
+.state-card,
+.empty-card {
+  min-height: 250px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  background: var(--surface);
+
+  text-align: center;
 }
 
-/* Modal */
+.state-card p {
+  margin: 11px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+}
+
+.loading-spinner {
+  width: 26px;
+  height: 26px;
+
+  border: 2px solid var(--primary-soft);
+
+  border-top-color: var(--primary);
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}
+
+.empty-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 13px;
+
+  background: var(--primary-soft);
+
+  color: var(--primary);
+
+  font-size: 22px;
+}
+
+.empty-card h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: 16px;
+
+  letter-spacing: -0.02em;
+}
+
+.empty-card p {
+  max-width: 390px;
+
+  margin: 8px 0 17px;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   MODAL
+   ========================================= */
 
 .modal-overlay {
   position: fixed;
+
   inset: 0;
-  z-index: 1000;
+
+  z-index: 500;
 
   display: flex;
   align-items: center;
@@ -1053,246 +2099,581 @@ onMounted(async () => {
 
   padding: 24px;
 
-  background: rgba(17, 24, 39, 0.45);
+  background: rgba(17, 24, 39, 0.48);
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
+  overflow-y: auto;
 }
 
-.modal {
+.modal-card,
+.delete-modal {
   width: 100%;
-  max-width: 620px;
+  max-width: 500px;
+
   max-height: calc(100vh - 48px);
 
   overflow-y: auto;
 
-  padding: 28px;
+  border: 1px solid var(--border);
 
-  border-radius: 14px;
+  border-radius: 16px;
+
   background: #ffffff;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+
+  box-shadow:
+    0 25px 70px rgba(23, 32, 51, 0.18);
+
+  animation:
+    modal-in 0.2s ease;
 }
+
+.modal-card {
+  padding: 23px;
+}
+
+.delete-modal {
+  max-width: 400px;
+
+  padding: 26px;
+
+  text-align: center;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================
+   MODAL HEADER
+   ========================================= */
 
 .modal-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 20px;
-  margin-bottom: 24px;
+
+  margin-bottom: 22px;
 }
 
-.modal-header h2 {
+.modal-eyebrow {
+  margin-bottom: 6px;
+
+  font-size: 8px;
+}
+
+.modal-header h2,
+.delete-content h2 {
   margin: 0;
-  color: #111827;
+
+  color: var(--text-primary);
+
   font-size: 21px;
+
+  letter-spacing: -0.035em;
 }
 
-.modal-header p {
-  margin: 6px 0 0;
-  color: #6b7280;
-  font-size: 13px;
+.modal-header p,
+.delete-content p {
+  margin: 7px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+  line-height: 1.55;
 }
 
-.close-button {
-  width: 34px;
-  height: 34px;
+.modal-close {
+  width: 30px;
+  height: 30px;
 
-  border: none;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 8px;
 
-  background: #f3f4f6;
-  color: #4b5563;
+  background: var(--surface-soft);
 
-  font-size: 22px;
-  line-height: 1;
+  color: var(--text-secondary);
+
+  font-size: 17px;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
+
+.modal-close:hover {
+  background: var(--danger-soft);
+
+  color: var(--danger);
+}
+
+
+/* =========================================
+   FORM
+   ========================================= */
 
 .application-form {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+
+  gap: 14px;
 }
 
 .form-row {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+
+  gap: 12px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+
+  gap: 6px;
 }
 
 .form-group label {
-  color: #374151;
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--text-primary);
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.form-group label span {
+  color: var(--danger);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  box-sizing: border-box;
 
-  padding: 11px 12px;
+  border: 1px solid var(--border-strong);
 
-  border: 1px solid #d9dce5;
   border-radius: 8px;
 
   background: #ffffff;
-  color: #111827;
 
-  font-size: 14px;
+  color: var(--text-primary);
+
+  font-size: 10px;
+
   outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+  height: 39px;
+
+  padding: 0 11px;
 }
 
 .form-group textarea {
+  min-height: 85px;
+
+  padding: 10px 11px;
+
   resize: vertical;
-  min-height: 100px;
 }
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px var(--primary-soft);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: var(--surface-soft);
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   FORM ERROR
+   ========================================= */
+
+.form-error {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 10px;
+
+  border: 1px solid #f1cccc;
+
+  border-radius: 8px;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  font-size: 9px;
+}
+
+.form-error span {
+  width: 16px;
+  height: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--danger);
+
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* =========================================
+   MODAL ACTIONS
+   ========================================= */
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+
+  gap: 8px;
+
   margin-top: 5px;
 }
 
-.result-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.secondary-button,
+.danger-button {
+  min-height: 38px;
 
-  margin-top: -10px;
-  margin-bottom: 20px;
+  padding: 8px 13px;
 
-  color: #6b7280;
-  font-size: 13px;
-}
+  border-radius: 8px;
 
-.clear-filter-button {
-  padding: 7px 12px;
-
-  border: 1px solid #d9dce5;
-  border-radius: 7px;
-
-  background: #ffffff;
-  color: #374151;
-
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 750;
 
   cursor: pointer;
 
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.clear-filter-button:hover {
-  background: #f3f5fb;
-  border-color: #1a2e6f;
-  color: #1a2e6f;
+.secondary-button {
+  border: 1px solid var(--border-strong);
+
+  background: #ffffff;
+
+  color: var(--text-secondary);
 }
 
-@media (max-width: 600px) {
-  .result-info {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
+.secondary-button:hover:not(:disabled) {
+  border-color: var(--primary);
+
+  background: var(--primary-soft);
+
+  color: var(--primary);
+}
+
+.danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid var(--danger);
+
+  background: var(--danger);
+
+  color: #ffffff;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: #bf3f3f;
+
+  border-color: #bf3f3f;
+}
+
+.secondary-button:disabled,
+.danger-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+.button-spinner {
+  width: 12px;
+  height: 12px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}
+
+
+/* =========================================
+   DELETE
+   ========================================= */
+
+.delete-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 15px;
+
+  border-radius: 14px;
+
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.delete-content strong {
+  color: var(--text-primary);
+}
+
+.delete-modal .form-error {
+  margin-top: 16px;
+
+  text-align: left;
+}
+
+.delete-modal .modal-actions {
+  justify-content: center;
+
+  margin-top: 22px;
+}
+
+
+/* =========================================
+   ANIMATION
+   ========================================= */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-
-  .clear-filter-button {
-    width: 100%;
-  }
 }
 
-/* Responsive */
 
-@media (max-width: 900px) {
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 950px) {
 
   .applications-container {
-    padding: 40px 24px 56px;
+    padding: 35px 20px 60px;
+  }
+
+  .filter-card {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .status-filter {
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+  .applications-container {
+    padding: 28px 16px 50px;
   }
 
   .page-header {
-    align-items: flex-start;
     flex-direction: column;
-  }
-
-  .application-content {
     align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
+
+    gap: 18px;
   }
 
-  .application-info {
-    align-items: flex-start;
-    flex-direction: row;
+  .header-copy h1 {
+    font-size: 35px;
   }
 
-}
-
-@media (max-width: 650px) {
-
-  .applications-container {
-    padding: 32px 18px 48px;
+  .header-copy p {
+    font-size: 11px;
   }
 
-  .page-header h1 {
-    font-size: 27px;
-  }
-
-  .filter-section {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .search-wrapper {
+  .page-header .primary-button {
     width: 100%;
   }
 
-  .filter-section select {
-    width: 100%;
+  .filter-card {
+    padding: 10px;
+  }
+
+  .status-filter {
+    padding-bottom: 4px;
+  }
+
+  .result-bar {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 9px 0;
+
+    gap: 7px;
+  }
+
+  .active-filters {
+    flex-wrap: wrap;
   }
 
   .application-card {
-    align-items: stretch;
+    grid-template-columns:
+      40px
+      minmax(0, 1fr);
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    padding: 14px;
+  }
+
+  .application-title-row {
+    align-items: flex-start;
+
     flex-direction: column;
+
+    gap: 6px;
   }
 
-  .application-content {
-    width: 100%;
+  .card-actions {
+    grid-column: 2;
+
+    justify-content: flex-start;
+
+    margin-top: -2px;
   }
 
-  .application-info {
-    width: 100%;
-    justify-content: space-between;
+  .modal-overlay {
+    align-items: flex-end;
+
+    padding: 10px;
   }
 
-  .application-actions {
-    width: 100%;
+  .modal-card,
+  .delete-modal {
+    max-height: calc(100vh - 20px);
+
+    border-radius: 15px;
   }
 
-  .application-actions button {
-    flex: 1;
+  .modal-card {
+    padding: 19px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
-    gap: 17px;
   }
 
-  .modal-overlay {
+}
+
+
+/* =========================================
+   SMALL MOBILE
+   ========================================= */
+
+@media (max-width: 400px) {
+
+  .applications-container {
+    padding: 24px 12px 45px;
+  }
+
+  .header-copy h1 {
+    font-size: 30px;
+  }
+
+  .application-card {
+    padding: 12px;
+  }
+
+  .company-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .application-title-row h2 {
+    font-size: 11px;
+  }
+
+  .position {
+    font-size: 8px;
+  }
+
+  .meta-row {
+    flex-direction: column;
     align-items: flex-start;
-    padding: 16px;
-  }
 
-  .modal {
-    max-height: calc(100vh - 32px);
-    padding: 22px;
+    gap: 4px;
   }
 
   .modal-actions {
@@ -1305,24 +2686,4 @@ onMounted(async () => {
 
 }
 
-@media (max-width: 420px) {
-
-  .search-wrapper {
-    flex-direction: column;
-  }
-
-  .search-button {
-    width: 100%;
-  }
-
-  .application-info {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .modal {
-    padding: 18px;
-  }
-
-}
 </style>

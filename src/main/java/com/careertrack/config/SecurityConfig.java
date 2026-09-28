@@ -31,34 +31,27 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-
                 .cors(cors -> cors.configurationSource(
                         corsConfigurationSource()
                 ))
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
                                 "/**"
                         ).permitAll()
-
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/hello"
                         ).permitAll()
-
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
@@ -74,7 +67,10 @@ public class SecurityConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://careertracks.netlify.app"
+                )
         );
 
         configuration.setAllowedMethods(
